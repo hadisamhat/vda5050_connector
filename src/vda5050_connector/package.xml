@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>vda5050_connector</name>
+  <version>0.0.0</version>
+  <description>This package contains all Str V4 libraries.</description>
+  <maintainer email="eddy.gharib@idealworks.com">Eddy Gharib</maintainer>
+  <license>Proprietary</license>
+  
+  <depend>git</depend>
+  <depend>libssl-dev</depend>
+  <depend>curl</depend>
+  <depend>uuid</depend>
+  <depend>libglib-dev</depend>
+  <depend>iw_logging</depend>
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+    <build_type>cmake</build_type>
+  </export>
+</package>

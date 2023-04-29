@@ -5,23 +5,35 @@ add_compile_options(-Werror -std=c++17)
 find_package(nlohmann_json REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(iw_logging REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system)
 
-add_library(${PROJECT_NAME} INTERFACE)
+add_subdirectory(interface)
 
-target_include_directories(${PROJECT_NAME} INTERFACE
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
+set(CPP_FILES
+      src/PolygonPoint.cpp
+      src/ProtocolHeader.cpp
+      src/Action.cpp
+      src/ActionParameter.cpp
+        )
+
+add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
+
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        )
+
+ament_export_include_directories(include)
+
+ament_target_dependencies(${PROJECT_NAME} nlohmann_json iw_logging) 
+
+target_link_libraries(${PROJECT_NAME} vda5050_connector_interface Boost::system)
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
 
-ament_target_dependencies(${PROJECT_NAME} INTERFACE
-  nlohmann_json
-  iw_logging
-)
-
+ament_export_targets(vda5050_connector_interfaceTargets HAS_LIBRARY_TARGET)
+ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
 ament_export_dependencies(nlohmann_json iw_logging)
-
-ament_export_include_directories(include)
 
 ament_package()

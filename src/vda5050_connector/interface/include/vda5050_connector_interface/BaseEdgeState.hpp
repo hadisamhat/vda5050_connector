@@ -4,7 +4,7 @@
 namespace vda5050_connector {
 namespace interface {
 
-template <class EdgeT, class TrajectoryT>
+template <class TrajectoryT>
 class BaseEdgeState : public BaseInterface {
  public:
   std::string edgeId;
@@ -12,9 +12,6 @@ class BaseEdgeState : public BaseInterface {
   std::string edgeDescription;  // OPTIONAL
   bool released;
   TrajectoryT trajectory;
-
-  bool isEqualWithoutTrajectory(const EdgeStateT& es1) const;
-  void fromEdge(const EdgeT& e);
 };
 
 }  // namespace interface

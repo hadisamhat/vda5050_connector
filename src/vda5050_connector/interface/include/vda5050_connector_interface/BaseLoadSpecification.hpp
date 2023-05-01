@@ -8,7 +8,7 @@ template <class LoadSetT>
 class BaseLoadSpecification : public BaseInterface {
  public:
   std::vector<std::string> loadPositions;
-  LoadSet boundingBoxReference;
+  std::vector<LoadSetT> loadSets;
 };
 
 }  // namespace interface

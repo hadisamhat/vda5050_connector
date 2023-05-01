@@ -27,6 +27,20 @@ set(CPP_FILES
       src/BoundingBoxReference.cpp
       src/ControlPoint.cpp
       src/Edge.cpp
+      src/EdgeState.cpp
+      src/Error.cpp
+      src/ErrorReference.cpp
+      src/FactSheet.cpp
+      src/LoadDimension.cpp
+      src/LoadSet.cpp
+      src/LoadSpecification.cpp
+      src/OptionalParameter.cpp
+      src/PhysicalParameters.cpp
+      src/ProtocolFeatures.cpp
+      src/ProtocolLimits.cpp
+      src/StringLength.cpp
+      src/TimingInfo.cpp
+      src/TypeSpecification.cpp
       src/Trajectory.cpp
         )
 

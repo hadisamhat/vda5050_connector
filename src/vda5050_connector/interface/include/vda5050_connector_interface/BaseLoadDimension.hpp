@@ -4,7 +4,7 @@
 namespace vda5050_connector {
 namespace interface {
 
-class BaseLoadDimensions : public BaseInterface {
+class BaseLoadDimension : public BaseInterface {
  public:
   float length;  // Unit : meters
   float width;   // Unit : meters

@@ -24,7 +24,7 @@ Json AgvAction::to_json() {
   j["actionParameters"] = action_params_j;
   return j;
 }
-void AgvAction ::from_json(const Json& j) {
+void AgvAction::from_json(const Json& j) {
   this->actionType = to_lower_copy(j.at("actionType").get<string>());
   if (j.find("actionDescription") != j.end()) {
     j.at("actionDescription").get_to(this->actionDescription);

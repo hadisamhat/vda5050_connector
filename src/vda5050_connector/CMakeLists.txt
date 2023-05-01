@@ -19,8 +19,15 @@ set(CPP_FILES
       src/WheelDefinition.cpp
       src/Action.cpp
       src/AgvAction.cpp
-      src/ActionParameter.cpp
       src/ActionState.cpp
+      src/ActionParameter.cpp
+      src/AgvPosition.cpp
+      src/ArrayLength.cpp
+      src/BatteryState.cpp
+      src/BoundingBoxReference.cpp
+      src/ControlPoint.cpp
+      src/Edge.cpp
+      src/Trajectory.cpp
         )
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})

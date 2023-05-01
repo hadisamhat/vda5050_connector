@@ -14,7 +14,7 @@ template <class ActionParameterT>
 class BaseAgvAction : public BaseInterface {
  public:
   std::string actionType;
-  std::string actionScopes;
+  std::string actionScope;
   std::string actionDescription;
   std::vector<ActionParameterT> actionParameters;
 };

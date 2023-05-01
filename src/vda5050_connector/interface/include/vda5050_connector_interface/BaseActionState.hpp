@@ -25,7 +25,7 @@ constexpr char FINISHED[] = "FINISHED";
 constexpr char FAILED[] = "FAILED";
 };  // namespace ActionStates
 
-template <class ActionT, class NodePositionT>
+template <class ActionT>
 class BaseActionState : public BaseInterface {
  public:
   std::string actionId;

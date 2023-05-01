@@ -12,11 +12,20 @@ add_subdirectory(interface)
 set(CPP_FILES
       src/PolygonPoint.cpp
       src/ProtocolHeader.cpp
+      src/Position.cpp
+      src/Envelope2d.cpp
+      src/Envelope3d.cpp
+      src/AgvGeometry.cpp
+      src/WheelDefinition.cpp
       src/Action.cpp
+      src/AgvAction.cpp
       src/ActionParameter.cpp
+      src/ActionState.cpp
         )
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
+
+add_executable(test_function src/test.cpp)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC

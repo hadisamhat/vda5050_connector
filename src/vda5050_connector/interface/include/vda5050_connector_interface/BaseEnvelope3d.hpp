@@ -4,7 +4,6 @@
 namespace vda5050_connector {
 namespace interface {
 
-template <class PolygonPointT>
 class BaseEnvelope3d : public BaseInterface {
  public:
   std::string set;

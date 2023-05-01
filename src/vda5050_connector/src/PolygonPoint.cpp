@@ -8,10 +8,7 @@ void PolygonPoint::from_json(const nlohmann::json& j) {
   j.at("x").get_to(this->x);
   j.at("y").get_to(this->y);
 }
-Json PolygonPoint::to_json() {
-  auto j = Json{{"x", this->x}, {"y", this->y}};
-  return j;
-}
+Json PolygonPoint::to_json() { return Json{{"x", this->x}, {"y", this->y}}; }
 
 }  // namespace impl
 }  // namespace vda5050_connector

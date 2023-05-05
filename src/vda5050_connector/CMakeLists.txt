@@ -42,7 +42,16 @@ set(CPP_FILES
       src/TimingInfo.cpp
       src/TypeSpecification.cpp
       src/Trajectory.cpp
-        )
+      src/Info.cpp
+      src/InfoReference.cpp
+      src/InstantAction.cpp
+      src/Node.cpp
+      src/Order.cpp
+      src/SafetyState.cpp
+      src/State.cpp
+      src/Velocity.cpp
+      src/NodePosition.cpp
+)
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
 

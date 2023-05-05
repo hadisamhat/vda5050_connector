@@ -3,8 +3,8 @@
 
 #include "vda5050_connector_interface/BaseTopicInterface.hpp"
 
-namespace iw {
-namespace vda5050_connector_interface {
+namespace vda5050_connector {
+namespace interface {
 
 namespace OperatingModes {
 constexpr char AUTOMATIC[] = "AUTOMATIC";
@@ -22,6 +22,7 @@ class BaseState : public BaseTopicInterface<HeaderT> {
   int orderUpdateId;
   std::string zoneSetId;  // OPTIONAL
   std::string lastNodeId;
+  nlohmann::json agvVersions;
   int lastNodeSequenceId;
   std::vector<NodeStateT> nodeStates;
   std::vector<EdgeStateT> edgeStates;
@@ -39,28 +40,30 @@ class BaseState : public BaseTopicInterface<HeaderT> {
   std::vector<InfoT> informations;
   SafetyStateT safState;
 
-  std::experimental::optional<EdgeStateT> getEdgeStateWithId(
-      const std::string& edgeId, const int& edgeSequenceId);
-  std::experimental::optional<NodeStateT> getNodeStateWithId(
-      const std::string& nodeId, const int& nodeSequenceId);
-  std::experimental::optional<ActionStateT> getActionStateWithId(const std::string& actionId);
-  std::experimental::optional<NodeStateT> getNodeStateWithSequenceId(int sequenceId);
-  bool removeActionStateWithId(const std::string& actionId);
-  bool removeNodeStateWithId(const std::string& nodeId, const int& nodeSequenceId);
-  bool removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequenceId);
-  bool updateContinuesOnPreviousOrder(const OrderT& orderUpdate);
-  bool hasHorizon();
-  bool hasActiveOrder() const;
-  int getNumberOfReleasedNodes();
-  void updateEdgeStateTrajectory(
-      const std::string& edgeId, const int& edgeSequenceId, TrajectoryT traj);
+  virtual std::experimental::optional<EdgeStateT> getEdgeStateWithId(
+      const std::string& edgeId, const int& edgeSequenceId) = 0;
+  virtual std::experimental::optional<NodeStateT> getNodeStateWithId(
+      const std::string& nodeId, const int& nodeSequenceId) = 0;
+  virtual std::experimental::optional<ActionStateT> getActionStateWithId(
+      const std::string& actionId) = 0;
+  virtual std::experimental::optional<NodeStateT> getNodeStateWithSequenceId(int sequenceId) = 0;
+  virtual bool removeActionStateWithId(const std::string& actionId) = 0;
+  virtual bool removeNodeStateWithId(const std::string& nodeId, const int& nodeSequenceId) = 0;
+  virtual bool removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequenceId) = 0;
+  virtual bool updateContinuesOnPreviousOrder(const OrderT& orderUpdate) = 0;
+  virtual bool hasHorizon() = 0;
+  virtual bool hasActiveOrder() const = 0;
+  virtual int getNumberOfReleasedNodes() = 0;
+  virtual void updateEdgeStateTrajectory(
+      const std::string& edgeId, const int& edgeSequenceId, TrajectoryT traj) = 0;
 
-  void updateNodeStateWithId(
-      const std::string& nodeId, const int& nodeSequenceId, const NodeT& nodeUpdate);
-  void updateEdgeStateWithId(
-      const std::string& edgeId, const int& edgeSequenceId, const EdgeT& edgeUpdate);
-  void updateActionStateWithId(const std::string& actionId, const std::string& newStatus);
-  void updateActionResultWithId(const std::string& actionId, const std::string& result);
+  virtual void updateNodeStateWithId(
+      const std::string& nodeId, const int& nodeSequenceId, const NodeT& nodeUpdate) = 0;
+  virtual void updateEdgeStateWithId(
+      const std::string& edgeId, const int& edgeSequenceId, const EdgeT& edgeUpdate) = 0;
+  virtual void updateActionStateWithId(
+      const std::string& actionId, const std::string& newStatus) = 0;
+  virtual void updateActionResultWithId(const std::string& actionId, const std::string& result) = 0;
 };
-}  // namespace vda5050_connector_interface
-}  // namespace iw
+}  // namespace interface
+}  // namespace vda5050_connector

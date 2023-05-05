@@ -20,8 +20,6 @@ class BaseNode : public BaseInterface {
       const std::string& action_type) = 0;
   virtual bool hasActionOfType(const std::string& action_type) const = 0;
   virtual std::experimental::optional<std::string> getTypeFromDescription() const = 0;
-  virtual void to_json(nlohmann::json& j, const NodeT& np) = 0;
-  virtual void from_json(const nlohmann::json& j, NodeT& np) = 0;
 };
 
 }  // namespace interface

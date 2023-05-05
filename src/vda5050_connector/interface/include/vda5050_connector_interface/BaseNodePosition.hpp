@@ -4,7 +4,7 @@
 namespace vda5050_connector {
 namespace interface {
 
-class BaseNodePostion : public BaseInterface {
+class BaseNodePosition : public BaseInterface {
  public:
   float x;                      // Unit : meters
   float y;                      // Unit : meters

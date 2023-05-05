@@ -27,7 +27,6 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
   virtual std::experimental::optional<NodeT> getNodeWithSequenceId(int sequenceId) = 0;
 
   virtual std::experimental::optional<NodeT> getLastReleasedNode() = 0;
-  virtual bool isValidOrderUpdate(const OrderT& orderUpdate) = 0;
 
   virtual int getNumberOfReleasedNodes() = 0;
 
@@ -43,7 +42,7 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
   virtual void updateNodeWithId(
       const std::string& nodeId, const int& nodeSequenceId, const NodeT& nodeUpdate) = 0;
   virtual void updateEdgeWithId(
-      const std::string& edgeId, const int& edgeSequenceId, const NodeT& edgeUpdate) = 0;
+      const std::string& edgeId, const int& edgeSequenceId, const EdgeT& edgeUpdate) = 0;
 
   // Sorts the order's nodes and edges based on their sequence ID.
   virtual void sort() = 0;

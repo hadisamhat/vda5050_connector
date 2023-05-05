@@ -20,7 +20,6 @@ class BaseState : public BaseTopicInterface<HeaderT> {
  public:
   std::string orderId;
   int orderUpdateId;
-  std::string zoneSetId;  // OPTIONAL
   std::string lastNodeId;
   nlohmann::json agvVersions;
   int lastNodeSequenceId;

@@ -7,13 +7,12 @@ namespace vda5050_connector {
 namespace interface {
 
 template <class HeaderT, class EdgeStateT, class NodeStateT, class ActionStateT,
-    class BatteryStateT, class ErrorT, class LoadT, class Info, class SafetyStateT,
+    class BatteryStateT, class ErrorT, class LoadT, class InfoT, class SafetyStateT,
     class AgvPositionT, class VelocityT>
 class BaseVisualization : public BaseTopicInterface<HeaderT> {
  public:
   std::string orderId;
   int orderUpdateId;
-  std::string zoneSetId;  // OPTIONAL
   std::string lastNodeId;
   int lastNodeSequenceId;
   std::vector<NodeStateT> nodeStates;

@@ -46,11 +46,13 @@ set(CPP_FILES
       src/InfoReference.cpp
       src/InstantAction.cpp
       src/Node.cpp
+      src/NodeState.cpp
       src/Order.cpp
       src/SafetyState.cpp
       src/State.cpp
       src/Velocity.cpp
       src/NodePosition.cpp
+      src/Visualization.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})

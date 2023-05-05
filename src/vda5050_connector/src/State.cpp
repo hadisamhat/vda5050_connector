@@ -11,8 +11,8 @@ namespace impl {
 
 Json State::to_json() {
   Json j = Json{{"orderId", this->orderId}, {"orderUpdateId", this->orderUpdateId},
-      {"agvVersions", this->agvVersions}, {"zoneSetId", this->zoneSetId},
-      {"lastNodeId", this->lastNodeId}, {"lastNodeSequenceId", this->lastNodeSequenceId},
+      {"agvVersions", this->agvVersions}, {"lastNodeId", this->lastNodeId},
+      {"lastNodeSequenceId", this->lastNodeSequenceId},
       {"agvPosition", this->agvPosition.to_json()}, {"velocity", this->velocity.to_json()},
       {"driving", this->driving}, {"paused", this->paused},
       {"newBaseRequest", this->newBaseRequest}, {"batteryState", this->batteryState.to_json()},
@@ -55,7 +55,6 @@ void State::from_json(const Json& j) {
   this->header.from_json(j);
   j.at("orderId").get_to(this->orderId);
   j.at("orderUpdateId").get_to(this->orderUpdateId);
-  j.at("zoneSetId").get_to(this->zoneSetId);
   j.at("lastNodeId").get_to(this->lastNodeId);
   j.at("lastNodeSequenceId").get_to(this->lastNodeSequenceId);
   j.at("paused").get_to(this->paused);

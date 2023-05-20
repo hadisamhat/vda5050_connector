@@ -11,14 +11,59 @@ using namespace boost::posix_time;
 namespace vda5050_connector {
 namespace impl {
 
-ManagerFSM::ManagerFSM(MQTTConfiguration config) : config_(config) {
+ManagerFSM::ManagerFSM(BaseNetworkConfiguration config) {
   config_ = config;
   logger_ = std::make_shared<iw::logging::StdLogger>();
   state_machine_ =
       std::make_shared<iw::state_machine::StateMachine<vda5050_connector::interface::FSMState>>(
           getName(), logger_);
+  io_context_ = std::make_shared<boost::asio::io_context>();
 };
 
+void ManagerFSM::loadTopicInfoFromConfig(SupportedTopic t) {
+  std::string prefix;
+
+  if (config_.mode == "dev") {
+    prefix = config_.dev_topic_prefix + "/";
+  } else if (config_.mode == "qa") {
+    prefix = config_.qa_topic_prefix + "/";
+  }
+  switch (t) {
+    case SupportedTopic::ORDER:
+      rx_order.topic_name = prefix.append(client_id_).append("/").append(config_.order_topic_name);
+      break;
+    case SupportedTopic::INSTANT_ACTION:
+      rx_instant_action.topic_name =
+          prefix.append(client_id_).append("/").append(config_.instant_action_topic_name);
+      break;
+
+    case SupportedTopic::STATE:
+      tx_state.topic_name = prefix.append(client_id_).append("/").append(config_.state_topic_name);
+      tx_state.update_time_s = config_.state_interval_secs;
+      break;
+
+    case SupportedTopic::CONNECTION:
+      tx_connection.topic_name =
+          prefix.append(client_id_).append("/").append(config_.connection_topic_name);
+      tx_connection.update_time_s = config_.connection_state_interval_secs;
+      break;
+
+    case SupportedTopic::VISUALIZATION:
+      tx_visualization.topic_name =
+          prefix.append(client_id_).append("/").append(config_.visualization_topic_name);
+      tx_visualization.update_time_s = config_.visualization_interval_secs;
+      break;
+
+    case SupportedTopic::FACT_SHEET:
+      tx_fact_sheet.topic_name =
+          prefix.append(client_id_).append("/").append(config_.fact_sheet_topic_name);
+      tx_fact_sheet.update_time_s = config_.fact_sheet_interval_secs;
+      break;
+
+    default:
+      return;
+  }
+}
 std::string ManagerFSM::getISOCurrentTimestamp() {
   ptime t = microsec_clock::universal_time();
   auto timestamp = to_iso_extended_string(t);
@@ -40,23 +85,44 @@ void ManagerFSM::createStateMachine() {
 void ManagerFSM::tick() {
   if (stop_.load()) return;
   state_machine_->tick();
-  io_context_.post([this]() { tick(); });
+  io_context_->post([this]() { tick(); });
 }
 
 void ManagerFSM::start() {
   createStateMachine();
   state_machine_->start(FSMState::INIT);
   worker_thread_ = std::thread([this]() {
-    io_context_.post([this]() { tick(); });
-    io_context_.run();
+    boost::asio::executor_work_guard<decltype(io_context_->get_executor())> work{
+        io_context_->get_executor()};
+    io_context_->run();
   });
+  io_context_->post([&]() { tick(); });
 }
 
-void ManagerFSM::stop() {
-  stop_.store(true);
-  if (!io_context_.stopped()) {
-    io_context_.stop();
+void ManagerFSM::disconnect() {
+  // Unsubscribe from the topic.
+  std::promise<void> unsubscribe_instant_action_finished_promise;
+  std::promise<void> unsubscribe_order_finished_promise;
+
+  connection_->Unsubscribe(
+      rx_instant_action.topic_name.c_str(), [&](Mqtt::MqttConnection&, uint16_t, int) {
+        unsubscribe_instant_action_finished_promise.set_value();
+      });
+  unsubscribe_instant_action_finished_promise.get_future().wait();
+
+  connection_->Unsubscribe(rx_order.topic_name.c_str(), [&](Mqtt::MqttConnection&, uint16_t, int) {
+    unsubscribe_order_finished_promise.set_value();
+  });
+  unsubscribe_order_finished_promise.get_future().wait();
+  // Disconnect
+  if (connection_->Disconnect()) {
+    connection_closed_promise_.get_future().wait();
   }
+}
+void ManagerFSM::stop() {
+  disconnect();
+  stop_.store(true);
+  io_context_->stop();
   worker_thread_.join();
 }
 

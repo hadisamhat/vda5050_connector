@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include "vda5050_connector_interface/BaseNetworkConfiguration.hpp"
 
 namespace vda5050_connector {
 namespace interface {

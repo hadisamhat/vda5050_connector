@@ -25,6 +25,15 @@ void ManagerFSM::initializeStates() {
         connection_->SetReconnectTimeout(
             config_.min_reconnect_backoff_sec, config_.max_reconnect_backoff_sec);
 
+        loadTopicInfoFromConfig(SupportedTopic::CONNECTION);
+        loadTopicInfoFromConfig(SupportedTopic::STATE);
+        loadTopicInfoFromConfig(SupportedTopic::ORDER);
+        loadTopicInfoFromConfig(SupportedTopic::INSTANT_ACTION);
+        loadTopicInfoFromConfig(SupportedTopic::VISUALIZATION);
+        loadTopicInfoFromConfig(SupportedTopic::FACT_SHEET);
+
+        logger_->logInfo("instant action topice name " + rx_instant_action.topic_name);
+
         tls_initialized_ = true;
       },
       [this] {}, [this] {});
@@ -137,7 +146,11 @@ void ManagerFSM::initializeStates() {
       },
       [this] {}, [this] {});
   state_machine_->addState(
-      FSMState::OPERATIONAL, [this] { state_update_time_ = system_clock::now(); },
+      FSMState::OPERATIONAL,
+      [this] {
+        state_update_time_ = connection_update_time_ = fact_sheet_update_time_ =
+            visualization_update_time_ = system_clock::now();
+      },
       [this] {
         // publish messages if time elapsed
         auto onPublishComplete = [](Mqtt::MqttConnection&, uint16_t, int) {};
@@ -157,7 +170,7 @@ void ManagerFSM::initializeStates() {
           // connection_->Publish(tx_state.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           //     payload, onPublishComplete);
         }
-        if (((system_clock::now() - start_time_) >
+        if (((system_clock::now() - visualization_update_time_) >
                 duration<double>(tx_visualization.update_time_s)) &&
             !config_.mute_coms) {
           std::lock_guard<std::mutex> lock_state(tx_visualization.pub_mutex);
@@ -168,12 +181,14 @@ void ManagerFSM::initializeStates() {
           tx_visualization.msg.header.serialNumber = config_.serial_number;
           auto j = tx_visualization.msg.to_json();
           logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
+          visualization_update_time_ = system_clock::now();
           //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
           //   j.dump().length()); connection_->Publish(tx_visualization.topic_name.c_str(),
           //   AWS_MQTT_QOS_AT_LEAST_ONCE,
           //       false, payload, onPublishComplete);
         }
-        if (((system_clock::now() - start_time_) > duration<double>(tx_connection.update_time_s)) &&
+        if (((system_clock::now() - connection_update_time_) >
+                duration<double>(tx_connection.update_time_s)) &&
             !config_.mute_coms) {
           std::lock_guard<std::mutex> lock_state(tx_connection.pub_mutex);
           tx_connection.msg.header.headerId++;
@@ -184,6 +199,8 @@ void ManagerFSM::initializeStates() {
           tx_connection.msg.connectionState = interface::ConnectionStates::ONLINE;
           auto j = tx_connection.msg.to_json();
           logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
+          connection_update_time_ = system_clock::now();
+
           //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
           //   j.dump().length());
           //   //   connection_->Publish(tx_connection.topic_name.c_str(),
@@ -191,7 +208,8 @@ void ManagerFSM::initializeStates() {
           //   //   false,
           //   //       payload, onPublishComplete);
         }
-        if (((system_clock::now() - start_time_) > duration<double>(tx_fact_sheet.update_time_s)) &&
+        if (((system_clock::now() - fact_sheet_update_time_) >
+                duration<double>(tx_fact_sheet.update_time_s)) &&
             !config_.mute_coms) {
           std::lock_guard<std::mutex> lock_state(tx_fact_sheet.pub_mutex);
           tx_fact_sheet.msg.header.headerId++;
@@ -205,6 +223,7 @@ void ManagerFSM::initializeStates() {
           //   j.dump().length()); connection_->Publish(tx_fact_sheet.topic_name.c_str(),
           //   AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           //       payload, onPublishComplete);
+          fact_sheet_update_time_ = system_clock::now();
         }
       },
       [this] {});
@@ -213,7 +232,9 @@ void ManagerFSM::initializeStates() {
       [this] { logger_->logInfo("AWS client Failed to connect. Retrying"); }, [this] {}, [this] {});
   state_machine_->addState(
       FSMState::ERROR,
-      [this] { logger_->logInfo("An error has occurred. Check logs for more information."); },
+      [this] {
+        logger_->logInfo("An error has occurred. Check logs for more information.");
+      },
       [this] {}, [this] {});
 }
 }  // namespace impl

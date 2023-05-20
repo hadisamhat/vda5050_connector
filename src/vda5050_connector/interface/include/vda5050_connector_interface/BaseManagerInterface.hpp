@@ -16,18 +16,13 @@ template <class Order, class InstantAction, class State, class Visualization, cl
     class FactSheet>
 class BaseManagerInterface {
  public:
-  /// Initializes the state machine
-  virtual void createStateMachine() = 0;
   /// Starts the state machine
   virtual void start() = 0;
-  /// Ticks the state machine
-  virtual void tick() = 0;
   /// Return current state of fsm
   virtual FSMState getCurrentState() = 0;
   virtual std::string getName() const = 0;
   /// Returns the name of the current state of the FSM
   virtual std::string getCurrentStateName() = 0;
-
   /// Stops the FSM
   virtual void stop() = 0;
   BaseSubscribedTopic<Order> rx_order;
@@ -38,13 +33,17 @@ class BaseManagerInterface {
   BasePublishedTopic<FactSheet> tx_fact_sheet;
 
  protected:
+  /// Ticks the state machine
+  virtual void tick() = 0;
+  /// Initializes the state machine
+  virtual void createStateMachine() = 0;
   /// Associates each State with its description string
   virtual void initializeStates() = 0;       ///< Initializes the states of the machine
   virtual void initializeTransitions() = 0;  ///< Initializes the transitions of the machine
                                              /// The state machine used to track the current state
-  boost::asio::io_context io_context_;
+  std::shared_ptr<boost::asio::io_context> io_context_;
   std::thread worker_thread_;
-  MQTTConfiguration config_;
+  BaseNetworkConfiguration config_;
   std::string client_id_;
 };
 }  // namespace interface

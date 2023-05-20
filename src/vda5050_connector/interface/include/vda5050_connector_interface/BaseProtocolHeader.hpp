@@ -5,7 +5,7 @@ namespace vda5050_connector {
 namespace interface {
 class BaseProtocolHeader : public BaseInterface {
  public:
-  int headerId;
+  int headerId{0};
   std::string timestamp;
   std::string version;
   std::string manufacturer;

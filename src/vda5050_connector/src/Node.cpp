@@ -46,6 +46,15 @@ std::experimental::optional<std::string> Node::getTypeFromDescription() const {
   return section;
 }
 
+void Node::fromNode(const Node& n) {
+  this->nodeId = n.nodeId;
+  this->sequenceId = n.sequenceId;
+  this->nodeDescription = n.nodeDescription;
+  this->nodePosition = n.nodePosition;
+  this->released = n.released;
+}
+
+
 /**
  * @brief: returns the first occurence of an action of the type: action_type and std::nullopt if no
  * action of this type is found

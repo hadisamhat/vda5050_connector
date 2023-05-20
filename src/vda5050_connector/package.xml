@@ -12,6 +12,7 @@
   <depend>uuid</depend>
   <depend>libglib-dev</depend>
   <depend>iw_logging</depend>
+  <depend>iw_state_machine</depend>
   <depend>libboost-system-dev</depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>

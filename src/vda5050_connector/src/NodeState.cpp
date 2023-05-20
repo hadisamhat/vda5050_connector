@@ -1,4 +1,3 @@
-#pragma once
 #include "vda5050_connector/NodeState.hpp"
 
 using Json = nlohmann::json;

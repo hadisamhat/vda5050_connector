@@ -1,26 +1,45 @@
-cmake_minimum_required(VERSION 3.8)
-project(iw_vda5050_connector)
+cmake_minimum_required(VERSION 3.13.2)
+project(iw_vda5050_connector VERSION 1.0.0 LANGUAGES CXX C)
+add_compile_options(-Werror -std=c++17)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+list(APPEND CMAKE_PREFIX_PATH "/opt/iw/usr/lib")
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(vda5050_connector REQUIRED)
+find_package(aws-crt-cpp REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+set(CPP_FILES
+      src/Action.cpp
+      src/InteractionZoneState.cpp
+      src/InstantAction.cpp
+      src/Load.cpp
+      src/MapUpdate.cpp
+      src/State.cpp
+      src/Visualization.cpp
+      src/Zone.cpp
+      src/ZoneParameter.cpp
+      src/ZoneUpdate.cpp
+)
+
+add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
+
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        )
+
+ament_export_include_directories(include)
+
+target_link_libraries(${PROJECT_NAME} Boost::system AWS::aws-crt-cpp)
+
+ament_target_dependencies(${PROJECT_NAME} vda5050_connector nlohmann_json iw_logging) 
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
+install(DIRECTORY include/ DESTINATION include)
+
+ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
+ament_export_dependencies(vda5050_connector)
 
 ament_package()

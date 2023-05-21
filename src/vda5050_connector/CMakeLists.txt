@@ -75,14 +75,16 @@ target_include_directories(${PROJECT_NAME}
 
 ament_export_include_directories(include)
 
-ament_target_dependencies(${PROJECT_NAME} iw_state_machine nlohmann_json iw_logging) 
+ament_target_dependencies(${PROJECT_NAME}  iw_state_machine nlohmann_json iw_logging) 
 
-target_link_libraries(${PROJECT_NAME} vda5050_connector_interface Boost::system AWS::aws-crt-cpp)
+target_link_libraries(${PROJECT_NAME} vda5050_connector_interface  Boost::system AWS::aws-crt-cpp)
 
 target_link_libraries(test_function ${PROJECT_NAME} AWS::aws-crt-cpp)
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
 install(TARGETS test_function RUNTIME DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY include/ DESTINATION include)
 
 ament_export_targets(vda5050_connector_interfaceTargets HAS_LIBRARY_TARGET)
 ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)

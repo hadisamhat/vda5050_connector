@@ -20,9 +20,12 @@ set(CPP_FILES
       src/Zone.cpp
       src/ZoneParameter.cpp
       src/ZoneUpdate.cpp
+      src/Vda5050Manager.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
+
+add_executable(test_function src/test.cpp)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -34,10 +37,13 @@ ament_export_include_directories(include)
 
 target_link_libraries(${PROJECT_NAME} Boost::system AWS::aws-crt-cpp)
 
+target_link_libraries(test_function ${PROJECT_NAME} AWS::aws-crt-cpp)
+
 ament_target_dependencies(${PROJECT_NAME} vda5050_connector nlohmann_json iw_logging) 
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
 install(DIRECTORY include/ DESTINATION include)
+install(TARGETS test_function RUNTIME DESTINATION bin/${PROJECT_NAME})
 
 ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
 ament_export_dependencies(vda5050_connector)

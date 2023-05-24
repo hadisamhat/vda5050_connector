@@ -58,14 +58,13 @@ set(CPP_FILES
       src/NodePosition.cpp
       src/Visualization.cpp
       src/Connection.cpp
-      src/manager_fsm/manager_fsm.cpp
-      src/manager_fsm/states.cpp
-      src/manager_fsm/transitions.cpp
+      # src/manager_fsm/manager_fsm.cpp
+      # src/manager_fsm/states.cpp
+      # src/manager_fsm/transitions.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})
 
-add_executable(test_function src/test.cpp)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -79,10 +78,7 @@ ament_target_dependencies(${PROJECT_NAME}  iw_state_machine nlohmann_json iw_log
 
 target_link_libraries(${PROJECT_NAME} vda5050_connector_interface  Boost::system AWS::aws-crt-cpp)
 
-target_link_libraries(test_function ${PROJECT_NAME} AWS::aws-crt-cpp)
-
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
-install(TARGETS test_function RUNTIME DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/ DESTINATION include)
 

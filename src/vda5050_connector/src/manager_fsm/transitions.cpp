@@ -7,7 +7,8 @@ using namespace std::chrono;
 namespace vda5050_connector {
 namespace impl {
 
-void ManagerFSM::initializeTransitions() {
+template <>
+void ManagerFSM<>::initializeTransitions() {
   state_machine_->addTransition(
       FSMState::INIT, FSMState::CONNECTED, [this] { return tls_initialized_; }, [this] {});
   state_machine_->addTransition(

@@ -7,11 +7,14 @@ using Json = nlohmann::json;
 
 namespace vda5050_connector {
 namespace impl {
-const std::map<FSMState, std::string> ManagerFSM::state_to_str_{{FSMState::INIT, "INIT"},
+
+template <>
+const std::map<FSMState, std::string> ManagerFSM<>::state_to_str_{{FSMState::INIT, "INIT"},
     {FSMState::OPERATIONAL, "OPERATIONAL"}, {FSMState::CONNECTED, "CONNECTED"},
     {FSMState::DISCONNECTED, "DISCONNECTED"}, {FSMState::ERROR, "ERROR"}};
 
-void ManagerFSM::initializeStates() {
+template <>
+void ManagerFSM<>::initializeStates() {
   state_machine_->addState(
       FSMState::INIT,
       [this] {
@@ -31,9 +34,6 @@ void ManagerFSM::initializeStates() {
         loadTopicInfoFromConfig(SupportedTopic::INSTANT_ACTION);
         loadTopicInfoFromConfig(SupportedTopic::VISUALIZATION);
         loadTopicInfoFromConfig(SupportedTopic::FACT_SHEET);
-
-        logger_->logInfo("instant action topice name " + rx_instant_action.topic_name);
-
         tls_initialized_ = true;
       },
       [this] {}, [this] {});
@@ -83,7 +83,6 @@ void ManagerFSM::initializeStates() {
                             std::string(ErrorDebugString(connection_->LastError())));
           error_ = true;
         };
-        start_time_ = system_clock::now();
 
         // This is invoked upon the receipt of a Publish on a subscribed topic.
         auto onOrderReceived = [&](Mqtt::MqttConnection&, const String& topic,
@@ -91,7 +90,7 @@ void ManagerFSM::initializeStates() {
                                    bool /*retain*/) {
           std::string msg((char*)byteBuf.buffer);
           logger_->logInfo("Received message" + msg + "on topic " + topic.c_str());
-          if (!rx_order.on_receive_fct) return;
+          if (!on_order_received_) return;
           Json j;
           try {
             j = Json::parse(msg);
@@ -101,7 +100,7 @@ void ManagerFSM::initializeStates() {
             return;
           }
           rx_order.msg.from_json(j);
-          rx_order.onReceive();
+          on_order_received_(rx_order.msg);
         };
 
         // This is invoked upon the receipt of a Publish on a subscribed topic.
@@ -110,7 +109,7 @@ void ManagerFSM::initializeStates() {
                                            bool /*retain*/) {
           std::string msg((char*)byteBuf.buffer);
           logger_->logInfo("Received message " + msg + " on topic " + std::string(topic));
-          if (!rx_instant_action.on_receive_fct) return;
+          if (!on_instant_action_received_) return;
           Json j;
           try {
             j = Json::parse(msg);
@@ -120,7 +119,7 @@ void ManagerFSM::initializeStates() {
             return;
           }
           rx_instant_action.msg.from_json(j);
-          rx_instant_action.onReceive();
+          on_instant_action_received_(rx_instant_action.msg);
         };
         // Subscribe for incoming publish messages on topic.
         auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,
@@ -136,7 +135,7 @@ void ManagerFSM::initializeStates() {
             error_ = true;
             return;
           }
-          logger_->logInfo("Subscribe on topic" + std::string(topic) + " Succeeded\n");
+          logger_->logInfo("Subscribe on topic " + std::string(topic) + " Succeeded\n");
         };
         /// connect to subscribers
         connection_->Subscribe(rx_order.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -148,93 +147,80 @@ void ManagerFSM::initializeStates() {
   state_machine_->addState(
       FSMState::OPERATIONAL,
       [this] {
-        state_update_time_ = connection_update_time_ = fact_sheet_update_time_ =
-            visualization_update_time_ = system_clock::now();
-      },
-      [this] {
-        // publish messages if time elapsed
-        auto onPublishComplete = [](Mqtt::MqttConnection&, uint16_t, int) {};
-        if (((system_clock::now() - state_update_time_) >
-                duration<double>(tx_state.update_time_s)) &&
-            !config_.mute_coms) {
-          std::lock_guard<std::mutex> lock_state(tx_state.pub_mutex);
-          tx_state.msg.header.headerId;
-          tx_state.msg.header.timestamp = getISOCurrentTimestamp();
-          tx_state.msg.header.version = config_.protocol_version;
-          tx_state.msg.header.manufacturer = config_.manufacturer;
-          tx_state.msg.header.serialNumber = config_.serial_number;
-          auto j = tx_state.msg.to_json();
-          logger_->logInfo("state timeout elapsed, publishing data" + j.dump());
-          state_update_time_ = system_clock::now();
-          // ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
-          // connection_->Publish(tx_state.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
-          //     payload, onPublishComplete);
+        if (tx_state.enable) {
+          setupPublisher(state_timer_, tx_state.topic_name, tx_state.update_time_s, [this]() {
+            tx_state.msg.header.headerId++;
+            tx_state.msg.header.timestamp = getISOCurrentTimestamp();
+            tx_state.msg.header.version = config_.protocol_version;
+            tx_state.msg.header.manufacturer = config_.manufacturer;
+            tx_state.msg.header.serialNumber = config_.serial_number;
+            auto j = tx_state.msg.to_json();
+            // logger_->logInfo("state timeout elapsed, publishing data" + j.dump());
+            //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
+            //   j.dump().length()); connection_->Publish(tx_visualization.topic_name.c_str(),
+            //   AWS_MQTT_QOS_AT_LEAST_ONCE,
+            //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+          });
         }
-        if (((system_clock::now() - visualization_update_time_) >
-                duration<double>(tx_visualization.update_time_s)) &&
-            !config_.mute_coms) {
-          std::lock_guard<std::mutex> lock_state(tx_visualization.pub_mutex);
-          tx_visualization.msg.header.headerId++;
-          tx_visualization.msg.header.timestamp = getISOCurrentTimestamp();
-          tx_visualization.msg.header.version = config_.protocol_version;
-          tx_visualization.msg.header.manufacturer = config_.manufacturer;
-          tx_visualization.msg.header.serialNumber = config_.serial_number;
-          auto j = tx_visualization.msg.to_json();
-          logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
-          visualization_update_time_ = system_clock::now();
-          //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-          //   j.dump().length()); connection_->Publish(tx_visualization.topic_name.c_str(),
-          //   AWS_MQTT_QOS_AT_LEAST_ONCE,
-          //       false, payload, onPublishComplete);
+        if (tx_connection.enable) {
+          setupPublisher(
+              connection_timer_, tx_connection.topic_name, tx_connection.update_time_s, [this]() {
+                tx_connection.msg.header.headerId++;
+                tx_connection.msg.header.timestamp = getISOCurrentTimestamp();
+                tx_connection.msg.header.version = config_.protocol_version;
+                tx_connection.msg.header.manufacturer = config_.manufacturer;
+                tx_connection.msg.header.serialNumber = config_.serial_number;
+                auto j = tx_connection.msg.to_json();
+                // logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
+                //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
+                //   j.dump().length()); connection_->Publish(tx_visualization.topic_name.c_str(),
+                //   AWS_MQTT_QOS_AT_LEAST_ONCE,
+                //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+              });
         }
-        if (((system_clock::now() - connection_update_time_) >
-                duration<double>(tx_connection.update_time_s)) &&
-            !config_.mute_coms) {
-          std::lock_guard<std::mutex> lock_state(tx_connection.pub_mutex);
-          tx_connection.msg.header.headerId++;
-          tx_connection.msg.header.timestamp = getISOCurrentTimestamp();
-          tx_connection.msg.header.version = config_.protocol_version;
-          tx_connection.msg.header.manufacturer = config_.manufacturer;
-          tx_connection.msg.header.serialNumber = config_.serial_number;
-          tx_connection.msg.connectionState = interface::ConnectionStates::ONLINE;
-          auto j = tx_connection.msg.to_json();
-          logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
-          connection_update_time_ = system_clock::now();
-
-          //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-          //   j.dump().length());
-          //   //   connection_->Publish(tx_connection.topic_name.c_str(),
-          //   AWS_MQTT_QOS_AT_LEAST_ONCE,
-          //   //   false,
-          //   //       payload, onPublishComplete);
+        if (tx_fact_sheet.enable) {
+          setupPublisher(
+              fact_sheet_timer_, tx_fact_sheet.topic_name, tx_fact_sheet.update_time_s, [this]() {
+                tx_fact_sheet.msg.header.headerId++;
+                tx_fact_sheet.msg.header.timestamp = getISOCurrentTimestamp();
+                tx_fact_sheet.msg.header.version = config_.protocol_version;
+                tx_fact_sheet.msg.header.manufacturer = config_.manufacturer;
+                tx_fact_sheet.msg.header.serialNumber = config_.serial_number;
+                auto j = tx_fact_sheet.msg.to_json();
+                // logger_->logInfo("Fact Sheet timeout elapsed, publishing data" + j.dump());
+                //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
+                //   j.dump().length()); connection_->Publish(tx_visualization.topic_name.c_str(),
+                //   AWS_MQTT_QOS_AT_LEAST_ONCE,
+                //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+              });
         }
-        if (((system_clock::now() - fact_sheet_update_time_) >
-                duration<double>(tx_fact_sheet.update_time_s)) &&
-            !config_.mute_coms) {
-          std::lock_guard<std::mutex> lock_state(tx_fact_sheet.pub_mutex);
-          tx_fact_sheet.msg.header.headerId++;
-          tx_fact_sheet.msg.header.timestamp = getISOCurrentTimestamp();
-          tx_fact_sheet.msg.header.version = config_.protocol_version;
-          tx_fact_sheet.msg.header.manufacturer = config_.manufacturer;
-          tx_fact_sheet.msg.header.serialNumber = config_.serial_number;
-          auto j = tx_fact_sheet.msg.to_json();
-          logger_->logInfo("Factsheet timeout elapsed, publishing data" + j.dump());
-          //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-          //   j.dump().length()); connection_->Publish(tx_fact_sheet.topic_name.c_str(),
-          //   AWS_MQTT_QOS_AT_LEAST_ONCE, false,
-          //       payload, onPublishComplete);
-          fact_sheet_update_time_ = system_clock::now();
+        if (tx_visualization.enable) {
+          setupPublisher(visualization_timer_, tx_visualization.topic_name,
+              tx_visualization.update_time_s, [this]() {
+                tx_visualization.msg.header.headerId++;
+                tx_visualization.msg.header.timestamp = getISOCurrentTimestamp();
+                tx_visualization.msg.header.version = config_.protocol_version;
+                tx_visualization.msg.header.manufacturer = config_.manufacturer;
+                tx_visualization.msg.header.serialNumber = config_.serial_number;
+                auto j = tx_visualization.msg.to_json();
+                // logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
+                //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
+                //   j.dump().length()); connection_->Publish(tx_visualization.topic_name.c_str(),
+                //   AWS_MQTT_QOS_AT_LEAST_ONCE,
+                //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+              });
+        }
+        if (p_callback_) {
+          p_callback_();
         }
       },
-      [this] {});
+      [this] {}, [this] {});
   state_machine_->addState(
       FSMState::DISCONNECTED,
       [this] { logger_->logInfo("AWS client Failed to connect. Retrying"); }, [this] {}, [this] {});
   state_machine_->addState(
       FSMState::ERROR,
-      [this] {
-        logger_->logInfo("An error has occurred. Check logs for more information.");
-      },
+      [this] { logger_->logInfo("An error has occurred. Check logs for more information."); },
       [this] {}, [this] {});
 }
 }  // namespace impl

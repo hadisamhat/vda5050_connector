@@ -36,6 +36,8 @@ namespace impl {
 
 enum class SupportedTopic { STATE, ORDER, INSTANT_ACTION, CONNECTION, VISUALIZATION, FACT_SHEET };
 
+template <class Order = Order, class InstantAction = InstantAction, class State = State,
+    class Visualization = Visualization, class Connection = Connection, class FactSheet = FactSheet>
 class ManagerFSM : public interface::BaseManagerInterface<Order, InstantAction, State,
                        Visualization, Connection, FactSheet> {
  public:
@@ -60,17 +62,38 @@ class ManagerFSM : public interface::BaseManagerInterface<Order, InstantAction, 
     }
   }
 
- private:
+  void setupPublisher(boost::asio::steady_timer& timer, const std::string& topic,
+      const double& update_time, const std::function<void()>& func) override;
+  void setPublishers(std::function<void()>& func){p_callback_ = func;};
+  Order getOrderMsg() override;
+  InstantAction getInstantActionMsg() override;
+  void updateStateMsg(const std::function<void(State&)>& func) override;
+  void updateVisualizationMsg(const std::function<void(Visualization&)>& func) override;
+  void updateConnectionMsg(const std::function<void(Connection&)>& func) override;
+  void updateFactSheetMsg(const std::function<void(FactSheet&)>& func) override;
+  void registerSubscriber(std::string topic_name, const std::function<void()>& onReceive) override;
+  void setOnOrderReceived(const std::function<void(Order&)>& func) { on_order_received_ = func; }
+  void setOnInstantActionReceived(const std::function<void(InstantAction&)>& func) {
+    on_instant_action_received_ = func;
+  };
+
+ protected:
   Aws::Crt::ApiHandle apiHandle;
   bool error_{false};
   std::atomic<bool> stop_{false};
-  std::mutex mtx;
-  std::condition_variable cv;
-  std::chrono::system_clock::time_point start_time_;
-  std::chrono::system_clock::time_point state_update_time_;
-  std::chrono::system_clock::time_point connection_update_time_;
-  std::chrono::system_clock::time_point fact_sheet_update_time_;
-  std::chrono::system_clock::time_point visualization_update_time_;
+
+  std::function<void()> p_callback_;
+  std::function<void(Order&)> on_order_received_;
+  std::function<void(InstantAction&)> on_instant_action_received_;
+
+  std::shared_ptr<boost::asio::io_context> io_context_;
+  boost::asio::steady_timer state_timer_;
+  boost::asio::steady_timer visualization_timer_;
+  boost::asio::steady_timer connection_timer_;
+  boost::asio::steady_timer fact_sheet_timer_;
+  boost::asio::steady_timer tick_timer_;
+
+  std::thread worker_thread_;
 
   bool tls_initialized_{false};
   std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> connection_;

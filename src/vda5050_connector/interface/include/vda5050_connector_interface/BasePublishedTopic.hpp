@@ -16,10 +16,6 @@ class BasePublishedTopic {
   double update_time_s;
   bool enable{true};
   T msg;
-  void updatePublisher(const std::function<void(T&)>& func) {
-    std::lock_guard<std::mutex> lock(pub_mutex);
-    func(msg);
-  };
 };
 
 }  // namespace interface

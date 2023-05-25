@@ -11,7 +11,7 @@ class AgvAction : public interface::BaseAgvAction<ActionParameter> {
   void from_json(const nlohmann::json& j) override;
 
  private:
-  std::string UpperFirst(std::string s);
+  void UpperFirst(std::string& s);
 };
 }  // namespace impl
 }  // namespace vda5050_connector

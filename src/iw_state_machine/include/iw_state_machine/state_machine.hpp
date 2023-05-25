@@ -10,7 +10,14 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 #pragma once
 
 #include <chrono>
+#if __cplusplus < 201402L
 #include <experimental/optional>
+namespace std {
+using optional = experimental::optional
+}
+#else
+#include <optional>
+#endif
 #include <functional>
 #include <map>
 #include <string>
@@ -22,7 +29,7 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 namespace iw {
 namespace state_machine {
 
-using std::experimental::optional;
+using std::optional;
 
 /// A basic state machine.
 ///
@@ -170,7 +177,7 @@ class StateMachine {
       throw(std::runtime_error("SM: Can not exit from state because not in a state"));
     }
     findState(*current_state_).on_exit_action();
-    current_state_ = std::experimental::nullopt;
+    current_state_ = std::nullopt;
   }
 
   /// Function to convert a state identifier to a string

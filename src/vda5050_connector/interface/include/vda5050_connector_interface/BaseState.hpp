@@ -1,6 +1,12 @@
 #pragma once
+#if __cplusplus < 201402L
 #include <experimental/optional>
-
+namespace std {
+using optional = experimental::optional
+}
+#else
+#include <optional>
+#endif
 #include "vda5050_connector_interface/BaseTopicInterface.hpp"
 
 namespace vda5050_connector {
@@ -39,13 +45,12 @@ class BaseState : public BaseTopicInterface<HeaderT> {
   std::vector<InfoT> informations;
   SafetyStateT safState;
 
-  virtual std::experimental::optional<EdgeStateT> getEdgeStateWithId(
+  virtual std::optional<EdgeStateT> getEdgeStateWithId(
       const std::string& edgeId, const int& edgeSequenceId) = 0;
-  virtual std::experimental::optional<NodeStateT> getNodeStateWithId(
+  virtual std::optional<NodeStateT> getNodeStateWithId(
       const std::string& nodeId, const int& nodeSequenceId) = 0;
-  virtual std::experimental::optional<ActionStateT> getActionStateWithId(
-      const std::string& actionId) = 0;
-  virtual std::experimental::optional<NodeStateT> getNodeStateWithSequenceId(int sequenceId) = 0;
+  virtual std::optional<ActionStateT> getActionStateWithId(const std::string& actionId) = 0;
+  virtual std::optional<NodeStateT> getNodeStateWithSequenceId(int sequenceId) = 0;
   virtual bool removeActionStateWithId(const std::string& actionId) = 0;
   virtual bool removeNodeStateWithId(const std::string& nodeId, const int& nodeSequenceId) = 0;
   virtual bool removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequenceId) = 0;

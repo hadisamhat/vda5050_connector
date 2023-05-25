@@ -3,8 +3,8 @@
 using namespace std;
 using Json = nlohmann::json;
 using namespace std;
-using std::experimental::nullopt;
-using std::experimental::optional;
+using std::nullopt;
+using std::optional;
 
 namespace iw {
 namespace vda5050 {
@@ -120,7 +120,7 @@ void State::from_json(const Json& j) {
  * @param edgeSequenceId
  * @return EdgeState
  */
-std::experimental::optional<EdgeState> State::getEdgeStateWithId(
+std::optional<EdgeState> State::getEdgeStateWithId(
     const std::string& edgeId, const int& edgeSequenceId) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
@@ -135,7 +135,7 @@ std::experimental::optional<EdgeState> State::getEdgeStateWithId(
  * @param nodeSequenceId
  * @return NodeState
  */
-std::experimental::optional<NodeState> State::getNodeStateWithId(
+std::optional<NodeState> State::getNodeStateWithId(
     const std::string& nodeId, const int& nodeSequenceId) {
   auto nsIterator = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& ns) { return ns.nodeId == nodeId && ns.sequenceId == nodeSequenceId; });
@@ -149,7 +149,7 @@ std::experimental::optional<NodeState> State::getNodeStateWithId(
  * @param sequenceId
  * @return NodeState
  */
-std::experimental::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
+std::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
   auto it = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [sequenceId](const NodeState& ns) { return ns.sequenceId == sequenceId; });
 
@@ -163,7 +163,7 @@ std::experimental::optional<NodeState> State::getNodeStateWithSequenceId(int seq
  * @param actionId
  * @return ActionState
  */
-std::experimental::optional<ActionState> State::getActionStateWithId(const std::string& actionId) {
+std::optional<ActionState> State::getActionStateWithId(const std::string& actionId) {
   auto actionIt = find_if(this->actionStates.begin(), this->actionStates.end(),
       [actionId](const ActionState& as) { return as.actionId == actionId; });
   if (actionIt == this->actionStates.end()) return nullopt;

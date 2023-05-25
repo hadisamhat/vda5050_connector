@@ -1,5 +1,12 @@
 #pragma once
-#include <experimental/optional>
+#if __cplusplus < 201402L
+#include <experimental/filesystem>
+namespace std {
+using filesystem = experimental::filesystem
+}
+#else
+#include <filesystem>
+#endif
 
 #include "vda5050_connector_interface/BaseInterface.hpp"
 
@@ -33,7 +40,7 @@ class BaseEdge : public BaseInterface {
   float length;            // OPTIONAL, Unit : meters
   std::vector<ActionT> actions;
 
-  virtual std::experimental::optional<ActionT> tryGetActionOfType(
+  virtual std::optional<ActionT> tryGetActionOfType(
       const std::string& action_type) = 0;
   virtual bool hasActionOfType(const std::string& action_type) const = 0;
 };

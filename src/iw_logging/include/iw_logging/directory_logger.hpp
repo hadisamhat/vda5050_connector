@@ -3,7 +3,14 @@
 #include <algorithm>
 #include <deque>
 #include <exception>
+#if __cplusplus < 201402L
 #include <experimental/filesystem>
+namespace std {
+using filesystem = experimental::filesystem
+}
+#else
+#include <filesystem>
+#endif
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -11,7 +18,7 @@
 namespace iw {
 namespace logging {
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 /// Implementation of a cyclic directory logging helper class
 class DirectoryLogger {

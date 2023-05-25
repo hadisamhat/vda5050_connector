@@ -79,7 +79,7 @@ class Action
   bool isSupportedAction(const std::vector<std::string>& allowedActions) const override;
 
   template <typename T>
-  std::experimental::optional<T> getParameterByKey(const char* key) const {
+  std::optional<T> getParameterByKey(const char* key) const {
     auto it = find_if(this->actionParameters.begin(), this->actionParameters.end(),
         [key](const vda5050_connector::impl::ActionParameter& ap) { return ap.key == key; });
     if (it != this->actionParameters.end()) {
@@ -97,11 +97,11 @@ class Action
 
       return value;
     }
-    return std::experimental::nullopt;
+    return std::nullopt;
   }
 
  private:
-  std::string UpperFirst(std::string s);
+  void UpperFirst(std::string& s);
 };
 }  // namespace vda5050
 }  // namespace iw

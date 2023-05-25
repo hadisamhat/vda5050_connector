@@ -1,6 +1,12 @@
 #pragma once
+#if __cplusplus < 201402L
 #include <experimental/optional>
-
+namespace std {
+using optional = experimental::optional
+}
+#else
+#include <optional>
+#endif
 #include "vda5050_connector_interface/BaseTopicInterface.hpp"
 
 namespace vda5050_connector {
@@ -15,18 +21,18 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
   std::vector<NodeT> nodes;
   std::vector<EdgeT> edges;
 
-  virtual std::experimental::optional<EdgeT> getEdgeWithId(
+  virtual std::optional<EdgeT> getEdgeWithId(
       const std::string& edgeId, const int& edgeSequenceId) = 0;
-  virtual std::experimental::optional<EdgeT> getEdgeWithStartNodeId(
+  virtual std::optional<EdgeT> getEdgeWithStartNodeId(
       const std::string& startNodeId, const int& edgeSequenceId) const = 0;
-  virtual std::experimental::optional<EdgeT> getEdgeWithEndNodeId(
+  virtual std::optional<EdgeT> getEdgeWithEndNodeId(
       const std::string& endNodeId, const int& edgeSequenceId) const = 0;
 
-  virtual std::experimental::optional<NodeT> getNodeWithId(
+  virtual std::optional<NodeT> getNodeWithId(
       const std::string& nodeId, const int& nodeSequenceId) const = 0;
-  virtual std::experimental::optional<NodeT> getNodeWithSequenceId(int sequenceId) = 0;
+  virtual std::optional<NodeT> getNodeWithSequenceId(int sequenceId) = 0;
 
-  virtual std::experimental::optional<NodeT> getLastReleasedNode() = 0;
+  virtual std::optional<NodeT> getLastReleasedNode() = 0;
 
   virtual int getNumberOfReleasedNodes() = 0;
 
@@ -34,9 +40,9 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
 
   virtual bool hasCorrectNodeCount() = 0;
 
-  virtual std::experimental::optional<NodeT> getNextNode(
+  virtual std::optional<NodeT> getNextNode(
       const std::string& prevNodeId, const int& prevNodeSequenceId) const = 0;
-  virtual std::experimental::optional<NodeT> getPreviousNode(
+  virtual std::optional<NodeT> getPreviousNode(
       const std::string& nodeId, const int& nodeSequenceId) const = 0;
 
   virtual void updateNodeWithId(

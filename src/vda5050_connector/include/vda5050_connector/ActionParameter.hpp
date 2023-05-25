@@ -1,7 +1,13 @@
 #pragma once
 #include <boost/algorithm/string.hpp>
+#if __cplusplus < 201402L
 #include <experimental/optional>
-
+namespace std {
+using optional = experimental::optional
+}
+#else
+#include <optional>
+#endif
 #include "vda5050_connector_interface/BaseActionParameter.hpp"
 
 namespace vda5050_connector {
@@ -13,7 +19,7 @@ class ActionParameter : public interface::BaseActionParameter {
   bool operator==(const ActionParameter& ap) const;
 
  private:
-  std::string UpperFirst(std::string s);
+  void UpperFirst(std::string& s);
 };
 }  // namespace impl
 }  // namespace vda5050_connector

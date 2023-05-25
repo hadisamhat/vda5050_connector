@@ -2,21 +2,21 @@
 
 using namespace boost::algorithm;
 using namespace std;
-using std::experimental::nullopt;
-using std::experimental::optional;
+using std::nullopt;
+using std::optional;
 using Json = nlohmann::json;
 
 namespace vda5050_connector {
 namespace impl {
 
-string AgvAction::UpperFirst(string s) {
+void AgvAction::UpperFirst(string& s) {
   if (!s.empty()) s[0] = toupper(s[0]);
-  return s;
 }
 
 Json AgvAction::to_json() {
-  Json j = Json{{"actionType", UpperFirst(this->actionType)},
-      {"actionDescription", this->actionDescription}, {"actionScope", this->actionScope}};
+  UpperFirst(this->actionType);
+  Json j = Json{{"actionType", this->actionType}, {"actionDescription", this->actionDescription},
+      {"actionScope", this->actionScope}};
   Json action_params_j = Json::array();
   for (auto& ap : this->actionParameters) {
     action_params_j.push_back(ap.to_json());

@@ -12,8 +12,22 @@
 #include <condition_variable>
 #include <cstdarg>
 #include <cstring>
+#if __cplusplus < 201402L
 #include <experimental/optional>
+namespace std {
+using optional = experimental::optional
+}
+#else
+#include <optional>
+#endif
+#if __cplusplus < 201402L
+#include <experimental/filesystem>
+namespace std {
+using filesystem = experimental::filesystem
+}
+#else
 #include <filesystem>
+#endif 
 #include <fstream>
 #include <future>
 #include <iomanip>
@@ -28,7 +42,7 @@
 using namespace vda5050_connector::interface;
 using namespace Aws::Crt;
 using namespace std::chrono;
-using namespace std::experimental;
+using namespace std;
 using Json = nlohmann::json;
 namespace filesys = std::filesystem;
 using namespace boost::posix_time;
@@ -561,7 +575,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     }
   }
 
-  std::experimental::optional<std::shared_ptr<Aws::Crt::Mqtt::MqttConnection>> initializeTLS() {
+  std::optional<std::shared_ptr<Aws::Crt::Mqtt::MqttConnection>> initializeTLS() {
     if (!filesExist({config_.root_ca_path, config_.cert_path, config_.priv_key_path,
             config_.client_id_path})) {
       logger_->logError("Required files do not exist.");

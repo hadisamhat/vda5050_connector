@@ -20,14 +20,11 @@ int main() {
   config.mode = "qa";
   config.qa_topic_prefix = "qa";
   config.dev_topic_prefix = "dev";
-  config.endpoint = "ahmj34rbzc71v-ats.iot.eu-central-1.amazonaws.com";
   config.priv_key_path = "/home/user/device_certificates/private.pem.key";
   config.root_ca_path = "/home/user/bootstrap_certificates/rootCA.crt";
   config.min_reconnect_backoff_sec = 0.01;
   config.max_reconnect_backoff_sec = 0.01;
   config.protocol_version = "5.0.0";
-  config.manufacturer = "BMW - AG";
-  config.serial_number = "1423320013919";
   config.instant_action_topic_name = "instantAction";
   config.order_topic_name = "order";
   config.visualization_topic_name = "viz";

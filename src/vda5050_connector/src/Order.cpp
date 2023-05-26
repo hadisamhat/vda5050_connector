@@ -50,7 +50,7 @@ void Order::from_json(const Json& j) {
  * @param edgeSequenceId
  * @return Edge
  */
-std::optional<Edge> Order::getEdgeWithId(const std::string& edgeId, const int& edgeSequenceId) {
+std::optional<Edge> Order::getEdgeWithId(const std::string& edgeId, int edgeSequenceId) {
   auto it = find_if(this->edges.begin(), this->edges.end(),
       [&](const Edge& e) { return e.edgeId == edgeId && e.sequenceId == edgeSequenceId; });
 
@@ -66,7 +66,7 @@ std::optional<Edge> Order::getEdgeWithId(const std::string& edgeId, const int& e
  * @return Edge
  */
 std::optional<Edge> Order::getEdgeWithStartNodeId(
-    const std::string& startNodeId, const int& edgeSequenceId) const {
+    const std::string& startNodeId, int edgeSequenceId) const {
   auto orderIt = find_if(this->edges.begin(), this->edges.end(), [&](const Edge& e) {
     return e.startNodeId == startNodeId && e.sequenceId == edgeSequenceId;
   });
@@ -82,7 +82,7 @@ std::optional<Edge> Order::getEdgeWithStartNodeId(
  * @return Edge
  */
 std::optional<Edge> Order::getEdgeWithEndNodeId(
-    const std::string& endNodeId, const int& edgeSequenceId) const {
+    const std::string& endNodeId, int edgeSequenceId) const {
   auto orderIt = find_if(this->edges.begin(), this->edges.end(),
       [&](const Edge& e) { return e.endNodeId == endNodeId && e.sequenceId == edgeSequenceId; });
   if (orderIt == this->edges.end()) return nullopt;
@@ -97,7 +97,7 @@ std::optional<Edge> Order::getEdgeWithEndNodeId(
  * @return Node
  */
 std::optional<Node> Order::getNodeWithId(
-    const std::string& nodeId, const int& nodeSequenceId) const {
+    const std::string& nodeId, int nodeSequenceId) const {
   auto it = find_if(this->nodes.begin(), this->nodes.end(),
       [&](const Node& n) { return n.nodeId == nodeId && n.sequenceId == nodeSequenceId; });
 
@@ -195,7 +195,7 @@ bool Order::hasCorrectNodeCount() {
  * @return Node
  */
 std::optional<Node> Order::getNextNode(
-    const std::string& prevNodeId, const int& prevNodeSequenceId) const {
+    const std::string& prevNodeId, int prevNodeSequenceId) const {
   auto edgeIt = this->getEdgeWithStartNodeId(prevNodeId, prevNodeSequenceId + 1);
   if (!edgeIt) return nullopt;
 
@@ -214,7 +214,7 @@ std::optional<Node> Order::getNextNode(
  * @param nodeUpdate
  */
 void Order::updateNodeWithId(
-    const std::string& nodeId, const int& nodeSequenceId, const Node& nodeUpdate) {
+    const std::string& nodeId, int nodeSequenceId, const Node& nodeUpdate) {
   auto it = find_if(this->nodes.begin(), this->nodes.end(),
       [&](const Node& n) { return n.nodeId == nodeId && n.sequenceId == nodeSequenceId; });
   if (it != this->nodes.end()) it->fromNode(nodeUpdate);
@@ -228,7 +228,7 @@ void Order::updateNodeWithId(
  * @param edgeUpdate
  */
 void Order::updateEdgeWithId(
-    const std::string& edgeId, const int& edgeSequenceId, const Edge& edgeUpdate) {
+    const std::string& edgeId, int edgeSequenceId, const Edge& edgeUpdate) {
   auto it = find_if(this->edges.begin(), this->edges.end(),
       [&](const Edge& n) { return n.edgeId == edgeId && n.sequenceId == edgeSequenceId; });
   if (it != this->edges.end()) it->fromEdge(edgeUpdate);
@@ -242,7 +242,7 @@ void Order::updateEdgeWithId(
  * @return nullopt if not previous node exists
  * @return Node
  */
-std::optional<Node> Order::getPreviousNode(const string& nodeId, const int& nodeSequenceId) const {
+std::optional<Node> Order::getPreviousNode(const string& nodeId, int nodeSequenceId) const {
   auto edgeIt = this->getEdgeWithEndNodeId(nodeId, nodeSequenceId - 1);
   if (!edgeIt) return nullopt;
 

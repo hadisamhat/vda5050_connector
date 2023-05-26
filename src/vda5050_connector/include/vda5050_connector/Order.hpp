@@ -11,13 +11,13 @@ class Order : public interface::BaseOrder<ProtocolHeader, Edge, Node> {
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
   std::optional<Edge> getEdgeWithId(
-      const std::string& edgeId, const int& edgeSequenceId) override;
+      const std::string& edgeId, int edgeSequenceId) override;
   std::optional<Edge> getEdgeWithStartNodeId(
-      const std::string& startNodeId, const int& edgeSequenceId) const override;
+      const std::string& startNodeId, int edgeSequenceId) const override;
   std::optional<Edge> getEdgeWithEndNodeId(
-      const std::string& endNodeId, const int& edgeSequenceId) const override;
+      const std::string& endNodeId, int edgeSequenceId) const override;
   std::optional<Node> getNodeWithId(
-      const std::string& nodeId, const int& nodeSequenceId) const override;
+      const std::string& nodeId, int nodeSequenceId) const override;
   std::optional<Node> getNodeWithSequenceId(int sequenceId) override;
 
   std::optional<Node> getLastReleasedNode() override;
@@ -29,14 +29,14 @@ class Order : public interface::BaseOrder<ProtocolHeader, Edge, Node> {
   bool hasCorrectNodeCount() override;
 
   std::optional<Node> getNextNode(
-      const std::string& prevNodeId, const int& prevNodeSequenceId) const override;
+      const std::string& prevNodeId, int prevNodeSequenceId) const override;
   std::optional<Node> getPreviousNode(
-      const std::string& nodeId, const int& nodeSequenceId) const override;
+      const std::string& nodeId, int nodeSequenceId) const override;
 
   void updateNodeWithId(
-      const std::string& nodeId, const int& nodeSequenceId, const Node& nodeUpdate) override;
+      const std::string& nodeId, int nodeSequenceId, const Node& nodeUpdate) override;
   void updateEdgeWithId(
-      const std::string& edgeId, const int& edgeSequenceId, const Edge& edgeUpdate) override;
+      const std::string& edgeId, int edgeSequenceId, const Edge& edgeUpdate) override;
 
   // Sorts the order's nodes and edges based on their sequence ID.
   void sort() override;

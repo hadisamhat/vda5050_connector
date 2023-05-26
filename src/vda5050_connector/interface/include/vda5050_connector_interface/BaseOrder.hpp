@@ -22,14 +22,14 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
   std::vector<EdgeT> edges;
 
   virtual std::optional<EdgeT> getEdgeWithId(
-      const std::string& edgeId, const int& edgeSequenceId) = 0;
+      const std::string& edgeId, int edgeSequenceId) = 0;
   virtual std::optional<EdgeT> getEdgeWithStartNodeId(
-      const std::string& startNodeId, const int& edgeSequenceId) const = 0;
+      const std::string& startNodeId, int edgeSequenceId) const = 0;
   virtual std::optional<EdgeT> getEdgeWithEndNodeId(
-      const std::string& endNodeId, const int& edgeSequenceId) const = 0;
+      const std::string& endNodeId, int edgeSequenceId) const = 0;
 
   virtual std::optional<NodeT> getNodeWithId(
-      const std::string& nodeId, const int& nodeSequenceId) const = 0;
+      const std::string& nodeId, int nodeSequenceId) const = 0;
   virtual std::optional<NodeT> getNodeWithSequenceId(int sequenceId) = 0;
 
   virtual std::optional<NodeT> getLastReleasedNode() = 0;
@@ -41,14 +41,14 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
   virtual bool hasCorrectNodeCount() = 0;
 
   virtual std::optional<NodeT> getNextNode(
-      const std::string& prevNodeId, const int& prevNodeSequenceId) const = 0;
+      const std::string& prevNodeId, int prevNodeSequenceId) const = 0;
   virtual std::optional<NodeT> getPreviousNode(
-      const std::string& nodeId, const int& nodeSequenceId) const = 0;
+      const std::string& nodeId, int nodeSequenceId) const = 0;
 
   virtual void updateNodeWithId(
-      const std::string& nodeId, const int& nodeSequenceId, const NodeT& nodeUpdate) = 0;
+      const std::string& nodeId, int nodeSequenceId, const NodeT& nodeUpdate) = 0;
   virtual void updateEdgeWithId(
-      const std::string& edgeId, const int& edgeSequenceId, const EdgeT& edgeUpdate) = 0;
+      const std::string& edgeId, int edgeSequenceId, const EdgeT& edgeUpdate) = 0;
 
   // Sorts the order's nodes and edges based on their sequence ID.
   virtual void sort() = 0;

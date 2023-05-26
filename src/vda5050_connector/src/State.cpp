@@ -106,7 +106,7 @@ void State::from_json(const Json& j) {
  * @return EdgeState
  */
 std::optional<EdgeState> State::getEdgeStateWithId(
-    const std::string& edgeId, const int& edgeSequenceId) {
+    const std::string& edgeId, int edgeSequenceId) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
   if (esIterator == this->edgeStates.end()) return nullopt;
@@ -121,7 +121,7 @@ std::optional<EdgeState> State::getEdgeStateWithId(
  * @return NodeState
  */
 std::optional<NodeState> State::getNodeStateWithId(
-    const std::string& nodeId, const int& nodeSequenceId) {
+    const std::string& nodeId, int nodeSequenceId) {
   auto nsIterator = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& ns) { return ns.nodeId == nodeId && ns.sequenceId == nodeSequenceId; });
   if (nsIterator == this->nodeStates.end()) return nullopt;
@@ -249,7 +249,7 @@ bool State::removeActionStateWithId(const std::string& actionId) {
  * @param nodeSequenceId
  * @return bool: true if removing node was successful
  */
-bool State::removeNodeStateWithId(const std::string& nodeId, const int& nodeSequenceId) {
+bool State::removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) {
   auto nsIterator = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& ns) { return ns.nodeId == nodeId && ns.sequenceId == nodeSequenceId; });
   // The action id for the action was found, remove it
@@ -267,7 +267,7 @@ bool State::removeNodeStateWithId(const std::string& nodeId, const int& nodeSequ
  * @param edgeSequenceId
  * @return bool: true if removing edge was was successful
  */
-bool State::removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequenceId) {
+bool State::removeEdgeStateWithId(const std::string& edgeId, int edgeSequenceId) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
   // The action id for the action was found, remove it
@@ -287,7 +287,7 @@ bool State::removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequ
  * @param traj
  */
 void State::updateEdgeStateTrajectory(
-    const std::string& edgeId, const int& edgeSequenceId, Trajectory traj) {
+    const std::string& edgeId, int edgeSequenceId, Trajectory traj) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
   if (esIterator == this->edgeStates.end()) return;
@@ -303,7 +303,7 @@ void State::updateEdgeStateTrajectory(
  * @param nodeUpdate
  */
 void State::updateNodeStateWithId(
-    const std::string& nodeId, const int& nodeSequenceId, const Node& nodeUpdate) {
+    const std::string& nodeId, int nodeSequenceId, const Node& nodeUpdate) {
   auto it = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& n) { return n.nodeId == nodeId && n.sequenceId == nodeSequenceId; });
   if (it != this->nodeStates.end()) it->fromNode(nodeUpdate);
@@ -317,7 +317,7 @@ void State::updateNodeStateWithId(
  * @param nodeUpdate
  */
 void State::updateEdgeStateWithId(
-    const std::string& edgeId, const int& edgeSequenceId, const Edge& edgeUpdate) {
+    const std::string& edgeId, int edgeSequenceId, const Edge& edgeUpdate) {
   auto it = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& e) { return e.edgeId == edgeId && e.sequenceId == edgeSequenceId; });
   if (it != this->edgeStates.end()) it->fromEdge(edgeUpdate);

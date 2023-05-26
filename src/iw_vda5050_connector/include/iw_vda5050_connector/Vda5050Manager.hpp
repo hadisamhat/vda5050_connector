@@ -18,7 +18,7 @@ namespace vda5050 {
 class Manager
     : public ManagerFSM<Order, InstantAction, State, Visualization, Connection, FactSheet> {
  public:
-  Manager(NetworkConfiguration config);
+  Manager(NetworkConfiguration config, boost::asio::io_context& context);
 
   void start() override;
   MapUpdate getMapUpdateMsg();

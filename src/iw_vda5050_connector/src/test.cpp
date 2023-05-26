@@ -22,8 +22,8 @@ int main() {
   config.dev_topic_prefix = "dev";
   config.priv_key_path = "/home/user/device_certificates/private.pem.key";
   config.root_ca_path = "/home/user/bootstrap_certificates/rootCA.crt";
-  config.min_reconnect_backoff_sec = 0.01;
-  config.max_reconnect_backoff_sec = 0.01;
+  config.min_reconnect_backoff_sec = 2;
+  config.max_reconnect_backoff_sec = 4;
   config.protocol_version = "5.0.0";
   config.instant_action_topic_name = "instantAction";
   config.order_topic_name = "order";
@@ -35,15 +35,27 @@ int main() {
   config.zone_update_topic_name = "zones";
   config.ssh_topic_name = "ssh_key";
 
-  std::shared_ptr<Manager> manager = std::make_shared<Manager>(config);
+  boost::asio::io_context io_context;
+  shared_ptr<Manager> manager = make_shared<Manager>(config, io_context);
   manager->setOnZoneUpdateReceived([&](ZoneUpdate zone) {
-    std::cout << "Custom on received function executed" << std::endl;
-    std::cout << "Action type received " << zone.zoneSetId << std::endl;
+    cout << "Custom on received function executed" << endl;
+    cout << "Action type received " << zone.zoneSetId << endl;
   });
   manager->start();
+  auto worker_thread_ = thread([&io_context]() {
+    try {
+      io_context.run();
+
+    } catch (const std::exception& e) {
+      std::cout << "Exception occurred: " << e.what() << std::endl;
+    }
+  });
   while (gSignalStatus == 0) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  };
+  }
   manager->stop();
+  io_context.stop();
+  worker_thread_.join();
+
   return 0;
 }

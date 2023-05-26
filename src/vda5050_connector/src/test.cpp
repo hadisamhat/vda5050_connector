@@ -11,10 +11,14 @@
 using namespace vda5050_connector::impl;
 using namespace vda5050_connector::interface;
 
-volatile std::sig_atomic_t gSignalStatus = 0;
+std::atomic<bool> ctrlCPressed(false);  // Atomic flag to indicate whether Ctrl+C is pressed
 
 // Signal handler for SIGINT (Ctrl+C)
-void signalHandler(int signal) { gSignalStatus = signal; }
+void signalHandler(int signal) {
+  if (signal == SIGINT) {
+    ctrlCPressed = true;  // Set the flag to true when Ctrl+C is pressed
+  }
+}
 
 int main() {
   std::signal(SIGINT, signalHandler);
@@ -40,17 +44,25 @@ int main() {
   config.fact_sheet_topic_name = "fs";
   config.state_topic_name = "state";
 
-  std::shared_ptr<ManagerFSM<Order, InstantAction, State, Visualization, Connection, FactSheet>>
-      manager = std::make_shared<
-          ManagerFSM<Order, InstantAction, State, Visualization, Connection, FactSheet>>(config);
+  boost::asio::io_context ioContext;
+  auto manager = std::make_shared<
+      ManagerFSM<Order, InstantAction, State, Visualization, Connection, FactSheet>>(
+      config, ioContext);
   manager->setOnOrderReceived([&](Order action) {
     std::cout << "Custom on received function executed" << std::endl;
     std::cout << "Action type received " << action.orderId << std::endl;
   });
+  std::cout << "before start";
   manager->start();
-  while (gSignalStatus == 0) {
+  std::cout << "after start";
+  auto worker_thread_ = std::thread([&ioContext]() { ioContext.run(); });
+  std::cout << "after thread";
+
+  while (!ctrlCPressed) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   };
+  std::cout << "control c pressed";
+  worker_thread_.join();
   manager->stop();
   return 0;
 }

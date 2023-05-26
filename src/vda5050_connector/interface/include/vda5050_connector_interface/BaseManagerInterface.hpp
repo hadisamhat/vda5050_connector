@@ -8,10 +8,11 @@
 #include "vda5050_connector_interface/BaseNetworkConfiguration.hpp"
 #include "vda5050_connector_interface/BasePublishedTopic.hpp"
 #include "vda5050_connector_interface/BaseSubscribedTopic.hpp"
+#include "vda5050_connector_interface/Vda5050Exception.hpp"
 
 namespace vda5050_connector {
 namespace interface {
-enum class FSMState { INIT, OPERATIONAL, CONNECTED, DISCONNECTED, ERROR };
+enum class FSMState { INIT, OPERATIONAL, DISCONNECTED, ERROR };
 template <class Order, class InstantAction, class State, class Visualization, class Connection,
     class FactSheet>
 class BaseManagerInterface {

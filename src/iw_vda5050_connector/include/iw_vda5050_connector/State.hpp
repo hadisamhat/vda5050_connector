@@ -31,25 +31,25 @@ class State : public vda5050_connector::interface::BaseState<ProtocolHeader, Ord
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
   std::optional<EdgeState> getEdgeStateWithId(
-      const std::string& edgeId, const int& edgeSequenceId) override;
+      const std::string& edgeId, int edgeSequenceId) override;
   std::optional<NodeState> getNodeStateWithId(
-      const std::string& nodeId, const int& nodeSequenceId) override;
+      const std::string& nodeId, int nodeSequenceId) override;
   std::optional<ActionState> getActionStateWithId(
       const std::string& actionId) override;
   std::optional<NodeState> getNodeStateWithSequenceId(int sequenceId) override;
   bool removeActionStateWithId(const std::string& actionId) override;
-  bool removeNodeStateWithId(const std::string& nodeId, const int& nodeSequenceId) override;
-  bool removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequenceId) override;
+  bool removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) override;
+  bool removeEdgeStateWithId(const std::string& edgeId, int edgeSequenceId) override;
   bool updateContinuesOnPreviousOrder(const Order& orderUpdate) override;
   bool hasHorizon() override;
   bool hasActiveOrder() const override;
   int getNumberOfReleasedNodes() override;
   void updateEdgeStateTrajectory(
-      const std::string& edgeId, const int& edgeSequenceId, Trajectory traj) override;
+      const std::string& edgeId, int edgeSequenceId, Trajectory traj) override;
   void updateNodeStateWithId(
-      const std::string& nodeId, const int& nodeSequenceId, const Node& nodeUpdate) override;
+      const std::string& nodeId, int nodeSequenceId, const Node& nodeUpdate) override;
   void updateEdgeStateWithId(
-      const std::string& edgeId, const int& edgeSequenceId, const Edge& edgeUpdate) override;
+      const std::string& edgeId, int edgeSequenceId, const Edge& edgeUpdate) override;
   void updateActionStateWithId(const std::string& actionId, const std::string& newStatus) override;
   void updateActionResultWithId(const std::string& actionId, const std::string& result) override;
   bool isSignificantChange(const State& s);

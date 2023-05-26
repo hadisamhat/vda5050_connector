@@ -46,25 +46,25 @@ class BaseState : public BaseTopicInterface<HeaderT> {
   SafetyStateT safState;
 
   virtual std::optional<EdgeStateT> getEdgeStateWithId(
-      const std::string& edgeId, const int& edgeSequenceId) = 0;
+      const std::string& edgeId, int edgeSequenceId) = 0;
   virtual std::optional<NodeStateT> getNodeStateWithId(
-      const std::string& nodeId, const int& nodeSequenceId) = 0;
+      const std::string& nodeId, int nodeSequenceId) = 0;
   virtual std::optional<ActionStateT> getActionStateWithId(const std::string& actionId) = 0;
   virtual std::optional<NodeStateT> getNodeStateWithSequenceId(int sequenceId) = 0;
   virtual bool removeActionStateWithId(const std::string& actionId) = 0;
-  virtual bool removeNodeStateWithId(const std::string& nodeId, const int& nodeSequenceId) = 0;
-  virtual bool removeEdgeStateWithId(const std::string& edgeId, const int& edgeSequenceId) = 0;
+  virtual bool removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) = 0;
+  virtual bool removeEdgeStateWithId(const std::string& edgeId, int edgeSequenceId) = 0;
   virtual bool updateContinuesOnPreviousOrder(const OrderT& orderUpdate) = 0;
   virtual bool hasHorizon() = 0;
   virtual bool hasActiveOrder() const = 0;
   virtual int getNumberOfReleasedNodes() = 0;
   virtual void updateEdgeStateTrajectory(
-      const std::string& edgeId, const int& edgeSequenceId, TrajectoryT traj) = 0;
+      const std::string& edgeId, int edgeSequenceId, TrajectoryT traj) = 0;
 
   virtual void updateNodeStateWithId(
-      const std::string& nodeId, const int& nodeSequenceId, const NodeT& nodeUpdate) = 0;
+      const std::string& nodeId, int nodeSequenceId, const NodeT& nodeUpdate) = 0;
   virtual void updateEdgeStateWithId(
-      const std::string& edgeId, const int& edgeSequenceId, const EdgeT& edgeUpdate) = 0;
+      const std::string& edgeId, int edgeSequenceId, const EdgeT& edgeUpdate) = 0;
   virtual void updateActionStateWithId(
       const std::string& actionId, const std::string& newStatus) = 0;
   virtual void updateActionResultWithId(const std::string& actionId, const std::string& result) = 0;

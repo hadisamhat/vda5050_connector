@@ -27,7 +27,7 @@ using filesystem = experimental::filesystem
 }
 #else
 #include <filesystem>
-#endif 
+#endif
 #include <fstream>
 #include <future>
 #include <iomanip>
@@ -56,17 +56,17 @@ template <class OrderMsg, class InstantActionMsg, class StateMsg, class Visualiz
 class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActionMsg, StateMsg,
                        VisualizationMsg, ConnectionMsg, FactSheetMsg> {
  public:
-  ManagerFSM(interface::BaseNetworkConfiguration config)
+  ManagerFSM(interface::BaseNetworkConfiguration config, boost::asio::io_context& io_context)
       : logger_(std::make_shared<iw::logging::StdLogger>()),
         state_machine_(std::make_shared<
             iw::state_machine::StateMachine<vda5050_connector::interface::FSMState>>(
             getName(), logger_)),
-        io_context_(std::make_shared<boost::asio::io_context>()),
-        tick_timer_(*io_context_),
-        state_timer_(*io_context_),
-        visualization_timer_(*io_context_),
-        connection_timer_(*io_context_),
-        fact_sheet_timer_(*io_context_) {
+        io_context_(io_context),
+        tick_timer_(io_context_),
+        state_timer_(io_context_),
+        visualization_timer_(io_context_),
+        connection_timer_(io_context_),
+        fact_sheet_timer_(io_context_) {
     config_ = config;
   }
 
@@ -80,15 +80,14 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     createStateMachine();
     state_machine_->start(FSMState::INIT);
     tick();
-    worker_thread_ = std::thread([this]() { io_context_->run(); });
   }
 
   void tick() override {
     tick_timer_.expires_after(std::chrono::milliseconds(100));
     tick_timer_.async_wait([this](const boost::system::error_code& ec) {
       if (stop_.load()) return;
-      if (ec) {
-        logger_->logError("timer is cancelled: " + std::string(ec.message()));
+      if (ec == boost::system::errc::operation_canceled) {
+        logger_->logError("tick is cancelled: " + std::string(ec.message()));
         return;
       }
       state_machine_->tick();
@@ -99,8 +98,13 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   void stop() override {
     disconnect();
     stop_.store(true);
-    io_context_->stop();
-    worker_thread_.join();
+    io_context_.post([&]() {
+      tick_timer_.cancel();
+      state_timer_.cancel();
+      visualization_timer_.cancel();
+      connection_timer_.cancel();
+      fact_sheet_timer_.cancel();
+    });
   }
 
   std::string getName() const override { return "AWSManagerFSM"; }
@@ -123,15 +127,14 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
   void setupPublisher(boost::asio::steady_timer& timer, const std::string& topic,
       const double& update_time, const std::function<void()>& func) override {
-    if (!func) return;
-
     std::chrono::duration<double> duration(update_time);
     auto time_s = std::chrono::duration_cast<std::chrono::seconds>(duration);
     timer.expires_after(std::chrono::seconds(time_s));
     timer.async_wait([&timer, topic, update_time, func, this](const boost::system::error_code& ec) {
       if (stop_.load()) return;
-      if (ec) {
-        logger_->logError("timer is cancelled: " + std::string(ec.message()));
+
+      if (ec == boost::system::errc::operation_canceled) {
+        logger_->logError("publisher timer is cancelled: " + std::string(ec.message()));
         return;
       }
       func();
@@ -153,7 +156,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
   void updateStateMsg(const std::function<void(StateMsg&)>& func) override {
     func(tx_state_.msg);
-    io_context_->post([this]() {
+    io_context_.post([this]() {
       tx_state_.msg.header.headerId++;
       tx_state_.msg.header.timestamp = getISOCurrentTimestamp();
       tx_state_.msg.header.version = config_.protocol_version;
@@ -170,7 +173,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
   void updateVisualizationMsg(const std::function<void(VisualizationMsg&)>& func) override {
     func(tx_visualization_.msg);
-    io_context_->post([this]() {
+    io_context_.post([this]() {
       tx_visualization_.msg.header.headerId++;
       tx_visualization_.msg.header.timestamp = getISOCurrentTimestamp();
       tx_visualization_.msg.header.version = config_.protocol_version;
@@ -187,7 +190,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
   void updateConnectionMsg(const std::function<void(ConnectionMsg&)>& func) {
     func(tx_connection_.msg);
-    io_context_->post([this]() {
+    io_context_.post([this]() {
       tx_connection_.msg.header.headerId++;
       tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();
       tx_connection_.msg.header.version = config_.protocol_version;
@@ -204,7 +207,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
   void updateFactSheetMsg(const std::function<void(FactSheetMsg&)>& func) override {
     func(tx_fact_sheet_.msg);
-    io_context_->post([this]() {
+    io_context_.post([this]() {
       tx_fact_sheet_.msg.header.headerId++;
       tx_fact_sheet_.msg.header.timestamp = getISOCurrentTimestamp();
       tx_fact_sheet_.msg.header.version = config_.protocol_version;
@@ -220,21 +223,17 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   }
 
   void registerSubscriber(std::string topic_name, const std::function<void(Json&)>& onReceive) {
-    if (!tls_initialized_) {
-      logger_->logError("Tls not initialized yet");
-      return;
-    }
+    if (error_) return;
     auto onMsgReceived = [onReceive, this](Mqtt::MqttConnection&, const String& topic,
                              const ByteBuf& byteBuf, bool /*dup*/, Mqtt::QOS /*qos*/,
                              bool /*retain*/) {
-      std::string msg((char*)byteBuf.buffer);
-      logger_->logInfo("Received message " + msg + "on topic " + topic.c_str());
+      std::string msg((char*)byteBuf.buffer, byteBuf.len);
+      logger_->logInfo("Received message " + msg + " on topic " + topic.c_str());
       Json j;
       try {
         j = Json::parse(msg);
       } catch (std::exception& e) {
-        error_ = true;
-        logger_->logError("Error while parsing state message, " + std::string(e.what()));
+        error_ = "Error while parsing message, " + std::string(e.what());
         return;
       }
       onReceive(j);
@@ -242,14 +241,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,
                                Mqtt::QOS QoS, int errorCode) {
       if (errorCode) {
-        logger_->logError("Subscribe on topic " + std::string(topic) + "failed with error \n" +
-                          std::string(aws_error_debug_str(errorCode)));
-        error_ = true;
+        error_ = "Subscribe on topic " + std::string(topic) + "failed with error \n" +
+                 std::string(aws_error_debug_str(errorCode));
         return;
       }
       if (!packetId || QoS == AWS_MQTT_QOS_FAILURE) {
-        logger_->logError("Subscribe rejected by the broker on topic." + std::string(topic));
-        error_ = true;
+        error_ = "Subscribe rejected by the broker on topic." + std::string(topic);
         return;
       }
       logger_->logInfo("Subscribe on topic" + std::string(topic) + " Succeeded\n");
@@ -266,7 +263,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
  protected:
   Aws::Crt::ApiHandle apiHandle;
-  bool error_{false};
+  std::optional<std::string> error_;
   std::atomic<bool> stop_{false};
 
   std::string client_id_;
@@ -282,18 +279,15 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   std::function<void(OrderMsg&)> on_order_received_;
   std::function<void(InstantActionMsg&)> on_instant_action_received_;
 
-  std::shared_ptr<boost::asio::io_context> io_context_;
+  boost::asio::io_context& io_context_;
   boost::asio::steady_timer state_timer_;
   boost::asio::steady_timer visualization_timer_;
   boost::asio::steady_timer connection_timer_;
   boost::asio::steady_timer fact_sheet_timer_;
   boost::asio::steady_timer tick_timer_;
 
-  std::thread worker_thread_;
-
-  bool tls_initialized_{false};
   std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> connection_;
-  Aws::Iot::MqttClient client_;
+  std::shared_ptr<Aws::Iot::MqttClient> client_;
   std::shared_ptr<iw::state_machine::StateMachine<vda5050_connector::interface::FSMState>>
       state_machine_;
   /// Message logger
@@ -321,34 +315,21 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
         [this] {
           auto connection = initializeTLS();
           if (!connection) {
-            logger_->logError("Failed to Initialize TLS connection object");
-            error_ = true;
+            error_ = "Failed to Initialize TLS connection object";
             return;
           }
           connection_ = connection.value();
           connection_->SetReconnectTimeout(
               config_.min_reconnect_backoff_sec, config_.max_reconnect_backoff_sec);
 
-          loadTopicInfoFromConfig(SupportedTopic::CONNECTION);
-          loadTopicInfoFromConfig(SupportedTopic::STATE);
-          loadTopicInfoFromConfig(SupportedTopic::ORDER);
-          loadTopicInfoFromConfig(SupportedTopic::INSTANT_ACTION);
-          loadTopicInfoFromConfig(SupportedTopic::VISUALIZATION);
-          loadTopicInfoFromConfig(SupportedTopic::FACT_SHEET);
-          tls_initialized_ = true;
-        },
-        [this] {}, [this] {});
-    state_machine_->addState(
-        FSMState::CONNECTED,
-        [this] {
-          // Invoked when a MQTT connect has completed or failed
-          auto onConnectionCompleted = [&](Aws::Crt::Mqtt::MqttConnection&, int errorCode,
-                                           Aws::Crt::Mqtt::ReturnCode returnCode, bool) {
+          loadTopicInfoFromConfig();
+
+          //  Invoked when a MQTT connect has completed or failed
+          connection_->OnConnectionCompleted = [&](Aws::Crt::Mqtt::MqttConnection&, int errorCode,
+                                                   Aws::Crt::Mqtt::ReturnCode returnCode, bool) {
             if (errorCode) {
-              logger_->logError(
-                  "Connection failed with error" + std::string(ErrorDebugString(errorCode)));
               connection_completed_promise_.set_value(false);
-              error_ = true;
+              error_ = "Connection failed with error" + std::string(ErrorDebugString(errorCode));
             } else {
               logger_->logInfo(
                   "Connection completed with return code " + std::to_string(returnCode));
@@ -356,48 +337,42 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
             }
           };
 
-          // Invoked when a MQTT connection was interrupted/lost
-          auto onInterrupted = [this](Aws::Crt::Mqtt::MqttConnection&, int error) {
-            logger_->logError(
-                "Connection interrupted with error" + std::string(ErrorDebugString(error)));
-          };
-
-          // Invoked when a MQTT connection was interrupted/lost, but then reconnected
-          // successfully
-          auto onResumed = [this](Aws::Crt::Mqtt::MqttConnection&, Aws::Crt::Mqtt::ReturnCode,
-                               bool) { logger_->logInfo("Connection resumed\n"); };
-
-          // Invoked when a disconnect message has completed.
-          auto onDisconnect = [this](Aws::Crt::Mqtt::MqttConnection&) {
-            logger_->logInfo("Disconnect completed\n");
+          connection_->OnDisconnect = [this](Aws::Crt::Mqtt::MqttConnection&) {
+            logger_->logInfo("Disconnect completed");
             connection_closed_promise_.set_value();
           };
 
-          connection_->OnConnectionCompleted = std::move(onConnectionCompleted);
-          connection_->OnDisconnect = std::move(onDisconnect);
-          connection_->OnConnectionInterrupted = std::move(onInterrupted);
-          connection_->OnConnectionResumed = std::move(onResumed);
+          // Invoked when a MQTT connection was interrupted/lost
+          connection_->OnConnectionInterrupted = [this](
+                                                     Aws::Crt::Mqtt::MqttConnection&, int error) {
+            logger_->logError(
+                "Connection interrupted with error" + std::string(ErrorDebugString(error)));
+          };
+          // Invoked when a MQTT connection was interrupted/lost, but then reconnected
+          // successfully
+          connection_->OnConnectionResumed = [this](Aws::Crt::Mqtt::MqttConnection&,
+                                                 Aws::Crt::Mqtt::ReturnCode, bool) {
+            logger_->logInfo("Connection resumed");
+          };
 
           logger_->logInfo("Connecting to AWS broker ...");
           if (!connection_->Connect(client_id_.c_str(), false, 1000)) {
-            logger_->logError("Failed to Connect To AWS Broker " +
-                              std::string(ErrorDebugString(connection_->LastError())));
-            error_ = true;
+            error_ = "Failed to Connect To AWS Broker " +
+                     std::string(ErrorDebugString(connection_->LastError()));
           };
 
           // This is invoked upon the receipt of a Publish on a subscribed topic.
           auto onOrderReceived = [&](Mqtt::MqttConnection&, const String& topic,
                                      const ByteBuf& byteBuf, bool /*dup*/, Mqtt::QOS /*qos*/,
                                      bool /*retain*/) {
-            std::string msg((char*)byteBuf.buffer);
+            std::string msg((char*)byteBuf.buffer, byteBuf.len);
             logger_->logInfo("Received message " + msg + "on topic " + topic.c_str());
             if (!on_order_received_) return;
             Json j;
             try {
               j = Json::parse(msg);
             } catch (std::exception& e) {
-              error_ = true;
-              logger_->logError("Error while parsing state message, " + std::string(e.what()));
+              error_ = "Error while parsing state message, " + std::string(e.what());
               return;
             }
             std::lock_guard<std::mutex> lock(rx_order_.sub_mutex);
@@ -409,15 +384,14 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           auto onInstantActionReceived = [&](Mqtt::MqttConnection&, const String& topic,
                                              const ByteBuf& byteBuf, bool /*dup*/,
                                              Mqtt::QOS /*qos*/, bool /*retain*/) {
-            std::string msg((char*)byteBuf.buffer);
+            std::string msg((char*)byteBuf.buffer, byteBuf.len);
             logger_->logInfo("Received message " + msg + " on topic " + std::string(topic));
             if (!on_instant_action_received_) return;
             Json j;
             try {
               j = Json::parse(msg);
             } catch (std::exception& e) {
-              error_ = true;
-              logger_->logError("Error while parsing state message, " + std::string(e.what()));
+              error_ = "Error while parsing state message, " + std::string(e.what());
               return;
             }
             std::lock_guard<std::mutex> lock(rx_instant_action_.sub_mutex);
@@ -428,15 +402,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,
                                      Mqtt::QOS QoS, int errorCode) {
             if (errorCode) {
-              logger_->logError("Subscribe on topic " + std::string(topic) +
-                                "failed with error \n" +
-                                std::string(aws_error_debug_str(errorCode)));
-              error_ = true;
+              error_ = "Subscribe on topic " + std::string(topic) + "failed with error \n" +
+                       std::string(aws_error_debug_str(errorCode));
               return;
             }
             if (!packetId || QoS == AWS_MQTT_QOS_FAILURE) {
-              logger_->logError("Subscribe rejected by the broker on topic." + std::string(topic));
-              error_ = true;
+              error_ = "Subscribe rejected by the broker on topic." + std::string(topic);
               return;
             }
             logger_->logInfo("Subscribe on topic " + std::string(topic) + " Succeeded\n");
@@ -524,36 +495,29 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
         },
         [this] {}, [this] {});
     state_machine_->addState(
-        FSMState::DISCONNECTED,
-        [this] { logger_->logInfo("AWS client Failed to connect. Retrying"); }, [this] {},
-        [this] {});
-    state_machine_->addState(
         FSMState::ERROR,
-        [this] { logger_->logInfo("An error has occurred. Check logs for more information."); },
+        [this] {
+          logger_->logInfo("An error has occurred " + error_.value());
+          throw vda5050::exception::Vda5050Exception(error_.value().c_str());
+        },
         [this] {}, [this] {});
   }
 
   void initializeTransitions() override {
     state_machine_->addTransition(
-        FSMState::INIT, FSMState::CONNECTED, [this] { return tls_initialized_; }, [this] {});
-    state_machine_->addTransition(
-        FSMState::CONNECTED, FSMState::OPERATIONAL,
+        FSMState::INIT, FSMState::OPERATIONAL,
         [this] { return !error_ && connection_completed_promise_.get_future().get(); }, [this] {});
-    //   state_machine_->addTransition(
-    //       FSMState::OPERATIONAL, FSMState::DISCONNECTED,
-    //       [this] { return !error_ && connection_completed_promise_.get_future().get(); },
-    //       [this]
-    //       {});
     for (const auto& state_pair : state_to_str_) {
       const auto state = state_pair.first;
       if (state != FSMState::ERROR) {
         state_machine_->addTransition(
-            state, FSMState::ERROR, [this] { return error_; }, [this] {});
+            state, FSMState::ERROR, [this] { return error_.has_value(); }, [this] {});
       }
     }
   }
 
   void disconnect() {
+    if (error_) return;
     // Unsubscribe from the topic.
     std::promise<void> unsubscribe_instant_action_finished_promise;
     std::promise<void> unsubscribe_order_finished_promise;
@@ -570,9 +534,9 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
         });
     unsubscribe_order_finished_promise.get_future().wait();
     // Disconnect
-    if (connection_->Disconnect()) {
-      connection_closed_promise_.get_future().wait();
-    }
+
+    connection_->Disconnect();
+    connection_closed_promise_.get_future().wait();
   }
 
   std::optional<std::shared_ptr<Aws::Crt::Mqtt::MqttConnection>> initializeTLS() {
@@ -602,8 +566,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                         std::string(ErrorDebugString(clientConfig.LastError())));
       return nullopt;
     }
-    client_ = Aws::Iot::MqttClient();
-    auto connection = client_.NewConnection(clientConfig);
+    client_ = std::make_shared<Aws::Iot::MqttClient>();
+    auto connection = client_->NewConnection(clientConfig);
     if (!*connection) {
       logger_->logError("MQTT Connection Creation failed with error \n" +
                         std::string(ErrorDebugString(connection->LastError())));
@@ -622,60 +586,34 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     return true;
   }
 
-  void loadTopicInfoFromConfig(SupportedTopic t) {
-    std::string prefix;
+  void loadTopicInfoFromConfig() {
+    std::string prefix =
+        ((config_.mode == "dev") ? config_.dev_topic_prefix : config_.qa_topic_prefix + "/")
+            .append(client_id_)
+            .append("/");
 
-    if (config_.mode == "dev") {
-      prefix = config_.dev_topic_prefix + "/";
-    } else if (config_.mode == "qa") {
-      prefix = config_.qa_topic_prefix + "/";
-    }
-    switch (t) {
-      case SupportedTopic::ORDER:
-        rx_order_.topic_name =
-            prefix.append(client_id_).append("/").append(config_.order_topic_name);
-        break;
-      case SupportedTopic::INSTANT_ACTION:
-        rx_instant_action_.topic_name =
-            prefix.append(client_id_).append("/").append(config_.instant_action_topic_name);
-        break;
+    rx_order_.topic_name = prefix + config_.order_topic_name;
+    rx_instant_action_.topic_name = prefix + config_.instant_action_topic_name;
 
-      case SupportedTopic::STATE:
-        tx_state_.topic_name =
-            prefix.append(client_id_).append("/").append(config_.state_topic_name);
-        tx_state_.update_time_s = config_.state_interval_secs;
-        break;
+    tx_state_.topic_name = prefix + config_.state_topic_name;
+    tx_state_.update_time_s = config_.state_interval_secs;
 
-      case SupportedTopic::CONNECTION:
-        tx_connection_.topic_name =
-            prefix.append(client_id_).append("/").append(config_.connection_topic_name);
-        tx_connection_.update_time_s = config_.connection_state_interval_secs;
-        break;
+    tx_connection_.topic_name = prefix + config_.connection_topic_name;
+    tx_connection_.update_time_s = config_.connection_state_interval_secs;
 
-      case SupportedTopic::VISUALIZATION:
-        tx_visualization_.topic_name =
-            prefix.append(client_id_).append("/").append(config_.visualization_topic_name);
-        tx_visualization_.update_time_s = config_.visualization_interval_secs;
-        break;
+    tx_visualization_.topic_name = prefix + config_.visualization_topic_name;
+    tx_visualization_.update_time_s = config_.visualization_interval_secs;
 
-      case SupportedTopic::FACT_SHEET:
-        tx_fact_sheet_.topic_name =
-            prefix.append(client_id_).append("/").append(config_.fact_sheet_topic_name);
-        tx_fact_sheet_.update_time_s = config_.fact_sheet_interval_secs;
-        break;
-
-      default:
-        return;
-    }
+    tx_fact_sheet_.topic_name = prefix + config_.fact_sheet_topic_name;
+    tx_fact_sheet_.update_time_s = config_.fact_sheet_interval_secs;
   }
 };
 
 template <class OrderMsg, class InstantActionMsg, class StateMsg, class VisualizationMsg,
     class ConnectionMsg, class FactSheetMsg>
 const std::map<FSMState, std::string> ManagerFSM<OrderMsg, InstantActionMsg, StateMsg,
-    VisualizationMsg, ConnectionMsg, FactSheetMsg>::state_to_str_{{FSMState::INIT, "INIT"},
-    {FSMState::OPERATIONAL, "OPERATIONAL"}, {FSMState::CONNECTED, "CONNECTED"},
-    {FSMState::DISCONNECTED, "DISCONNECTED"}, {FSMState::ERROR, "ERROR"}};
+    VisualizationMsg, ConnectionMsg, FactSheetMsg>::state_to_str_{
+    {FSMState::INIT, "INIT"}, {FSMState::OPERATIONAL, "OPERATIONAL"}, {FSMState::ERROR, "ERROR"}};
 
 }  // namespace impl
 }  // namespace vda5050_connector

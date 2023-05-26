@@ -11,5 +11,4 @@ def get_vda5050_deps():
         build_file = clean_dep("//third_party:nlohmann_json.BUILD"),
         tag = "v3.10.0",
         remote = "https://github.com/nlohmann/json.git",
-        licenses = ["@nlohmann_json/LICENSE.MIT",],
     )

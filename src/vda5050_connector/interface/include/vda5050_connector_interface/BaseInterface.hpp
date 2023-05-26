@@ -3,11 +3,8 @@
 
 #include "iw_logging/logger_base.hpp"
 #include "iw_logging/std_logger.hpp"
-#ifdef __has_include("nlohmann/json.hpp")
 #include "nlohmann/json.hpp"
-#else
-#include "third_party/nlohmann/json.hpp"
-#endif
+
 namespace vda5050_connector {
 namespace interface {
 

@@ -1,3 +1,5 @@
 workspace(name = "vda5050_connector")
 
-vda5050_connector_workspace()
+load("//third_party:dependencies.bzl", "get_vda5050_deps")
+
+get_vda5050_deps()

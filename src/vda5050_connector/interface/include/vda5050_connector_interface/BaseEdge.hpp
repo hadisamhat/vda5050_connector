@@ -2,7 +2,7 @@
 #if __cplusplus < 201703L
 #include <experimental/filesystem>
 namespace std {
-using filesystem = experimental::filesystem
+using filesystem = experimental::filesystem;
 }
 #else
 #include <filesystem>

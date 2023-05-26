@@ -2,7 +2,7 @@
 #if __cplusplus < 201703L
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional
+using optional = experimental::optional;
 }
 #else
 #include <optional>

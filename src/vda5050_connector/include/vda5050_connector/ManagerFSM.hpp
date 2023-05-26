@@ -15,7 +15,7 @@
 #if __cplusplus < 201703L
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional
+using optional = experimental::optional;
 }
 #else
 #include <optional>
@@ -23,7 +23,7 @@ using optional = experimental::optional
 #if __cplusplus < 201703L
 #include <experimental/filesystem>
 namespace std {
-using filesystem = experimental::filesystem
+using filesystem = experimental::filesystem;
 }
 #else
 #include <filesystem>

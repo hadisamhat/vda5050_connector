@@ -3,7 +3,6 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <nlohmann/json.hpp>
 
 #include "vda5050_connector_interface/BaseInterface.hpp"
 

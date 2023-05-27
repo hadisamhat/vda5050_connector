@@ -1,10 +1,10 @@
 #pragma once
-#if __has_include(<filesystem>)
+#if __cplusplus > 201402L
 #include <filesystem>
-#elif __has_include(<experimental/filesystem>)
+#else
 #include <experimental/filesystem>
 namespace std {
-namespace filesystem = std::experimental::filesystem;
+using namespace experimental;
 }
 #endif
 #include "vda5050_connector_interface/BaseInterface.hpp"

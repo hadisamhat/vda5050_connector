@@ -6,5 +6,6 @@ cc_library(
     deps = [
         "//src/vda5050_connector"
     ],
-    strip_include_prefix = "include/"
+    strip_include_prefix = "include/",
+    copts = ["-Wno-reorder"]
 )

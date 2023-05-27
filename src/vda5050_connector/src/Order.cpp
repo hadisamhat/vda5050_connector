@@ -54,7 +54,7 @@ std::optional<Edge> Order::getEdgeWithId(const std::string& edgeId, int edgeSequ
   auto it = find_if(this->edges.begin(), this->edges.end(),
       [&](const Edge& e) { return e.edgeId == edgeId && e.sequenceId == edgeSequenceId; });
 
-  if (it == this->edges.end()) return nullopt;
+  if (it == this->edges.end()) return std::nullopt;
   return *it;
 }
 
@@ -70,7 +70,7 @@ std::optional<Edge> Order::getEdgeWithStartNodeId(
   auto orderIt = find_if(this->edges.begin(), this->edges.end(), [&](const Edge& e) {
     return e.startNodeId == startNodeId && e.sequenceId == edgeSequenceId;
   });
-  if (orderIt == this->edges.end()) return nullopt;
+  if (orderIt == this->edges.end()) return std::nullopt;
   return *orderIt;
 }
 
@@ -85,7 +85,7 @@ std::optional<Edge> Order::getEdgeWithEndNodeId(
     const std::string& endNodeId, int edgeSequenceId) const {
   auto orderIt = find_if(this->edges.begin(), this->edges.end(),
       [&](const Edge& e) { return e.endNodeId == endNodeId && e.sequenceId == edgeSequenceId; });
-  if (orderIt == this->edges.end()) return nullopt;
+  if (orderIt == this->edges.end()) return std::nullopt;
   return *orderIt;
 }
 
@@ -101,7 +101,7 @@ std::optional<Node> Order::getNodeWithId(
   auto it = find_if(this->nodes.begin(), this->nodes.end(),
       [&](const Node& n) { return n.nodeId == nodeId && n.sequenceId == nodeSequenceId; });
 
-  if (it == this->nodes.end()) return nullopt;
+  if (it == this->nodes.end()) return std::nullopt;
   return *it;
 }
 
@@ -115,7 +115,7 @@ std::optional<Node> Order::getNodeWithSequenceId(int sequenceId) {
   auto it = find_if(this->nodes.begin(), this->nodes.end(),
       [sequenceId](const Node& n) { return n.sequenceId == sequenceId; });
 
-  if (it == this->nodes.end()) return nullopt;
+  if (it == this->nodes.end()) return std::nullopt;
   return *it;
 }
 
@@ -129,7 +129,7 @@ std::optional<Node> Order::getLastReleasedNode() {
       reverse_iterator<vector<Node>::iterator>(nodes.begin()),
       [](const Node& n) { return n.released; });
 
-  if (it == reverse_iterator<vector<Node>::iterator>(nodes.begin())) return nullopt;
+  if (it == reverse_iterator<vector<Node>::iterator>(nodes.begin())) return std::nullopt;
   return *it;
 }
 
@@ -197,11 +197,11 @@ bool Order::hasCorrectNodeCount() {
 std::optional<Node> Order::getNextNode(
     const std::string& prevNodeId, int prevNodeSequenceId) const {
   auto edgeIt = this->getEdgeWithStartNodeId(prevNodeId, prevNodeSequenceId + 1);
-  if (!edgeIt) return nullopt;
+  if (!edgeIt) return std::nullopt;
 
   // Find the node that is connected to the edge found above.
   auto nodeIt = this->getNodeWithId(edgeIt.value().endNodeId, edgeIt.value().sequenceId + 1);
-  if (!nodeIt) return nullopt;
+  if (!nodeIt) return std::nullopt;
 
   return *nodeIt;
 }
@@ -244,11 +244,11 @@ void Order::updateEdgeWithId(
  */
 std::optional<Node> Order::getPreviousNode(const string& nodeId, int nodeSequenceId) const {
   auto edgeIt = this->getEdgeWithEndNodeId(nodeId, nodeSequenceId - 1);
-  if (!edgeIt) return nullopt;
+  if (!edgeIt) return std::nullopt;
 
   // Find the node that is connected to the edge found above.
   auto nodeIt = this->getNodeWithId(edgeIt.value().startNodeId, edgeIt.value().sequenceId - 1);
-  if (!nodeIt) return nullopt;
+  if (!nodeIt) return std::nullopt;
 
   return *nodeIt;
 }

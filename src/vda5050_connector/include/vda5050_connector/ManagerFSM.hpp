@@ -12,20 +12,20 @@
 #include <condition_variable>
 #include <cstdarg>
 #include <cstring>
-#if __has_include(<optional>)
-#include <optional>
-#elif __has_include(<experimental/optional>)
-#include <experimental/optional>
+#if __cplusplus > 201402L
+#include <filesystem>
+#else
+#include <experimental/filesystem>
 namespace std {
 using namespace experimental;
 }
 #endif
-#if __has_include(<filesystem>)
-#include <filesystem>
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
+#if __cplusplus > 201402L
+#include <optional>
+#else
+#include <experimental/optional>
 namespace std {
-namespace filesystem = std::experimental::filesystem;
+using namespace experimental;
 }
 #endif
 #include <fstream>
@@ -241,15 +241,15 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,
                                Mqtt::QOS QoS, int errorCode) {
       if (errorCode) {
-        error_ = "Subscribe on topic " + std::string(topic) + "failed with error \n" +
+        error_ = "Subscribe on topic " + std::string(topic.c_str()) + "failed with error \n" +
                  std::string(aws_error_debug_str(errorCode));
         return;
       }
       if (!packetId || QoS == AWS_MQTT_QOS_FAILURE) {
-        error_ = "Subscribe rejected by the broker on topic." + std::string(topic);
+        error_ = "Subscribe rejected by the broker on topic." + std::string(topic.c_str());
         return;
       }
-      logger_->logInfo("Subscribe on topic" + std::string(topic) + " Succeeded\n");
+      logger_->logInfo("Subscribe on topic" + std::string(topic.c_str()) + " Succeeded\n");
     };
     connection_->Subscribe(
         topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, onMsgReceived, onSubscriberAck);
@@ -384,7 +384,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                              const ByteBuf& byteBuf, bool /*dup*/,
                                              Mqtt::QOS /*qos*/, bool /*retain*/) {
             std::string msg((char*)byteBuf.buffer, byteBuf.len);
-            logger_->logInfo("Received message " + msg + " on topic " + std::string(topic));
+            logger_->logInfo("Received message " + msg + " on topic " + std::string(topic.c_str()));
             if (!on_instant_action_received_) return;
             Json j;
             try {
@@ -401,15 +401,15 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,
                                      Mqtt::QOS QoS, int errorCode) {
             if (errorCode) {
-              error_ = "Subscribe on topic " + std::string(topic) + "failed with error \n" +
+              error_ = "Subscribe on topic " + std::string(topic.c_str()) + "failed with error \n" +
                        std::string(aws_error_debug_str(errorCode));
               return;
             }
             if (!packetId || QoS == AWS_MQTT_QOS_FAILURE) {
-              error_ = "Subscribe rejected by the broker on topic." + std::string(topic);
+              error_ = "Subscribe rejected by the broker on topic." + std::string(topic.c_str());
               return;
             }
-            logger_->logInfo("Subscribe on topic " + std::string(topic) + " Succeeded\n");
+            logger_->logInfo("Subscribe on topic " + std::string(topic.c_str()) + " Succeeded\n");
           };
           /// connect to subscribers
           connection_->Subscribe(rx_order_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -510,7 +510,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       const auto state = state_pair.first;
       if (state != FSMState::ERROR) {
         state_machine_->addTransition(
-            state, FSMState::ERROR, [this] { return error_.has_value(); }, [this] {});
+            state, FSMState::ERROR, [this] { return false; }, [this] {});
       }
     }
   }
@@ -542,7 +542,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     if (!filesExist({config_.root_ca_path, config_.cert_path, config_.priv_key_path,
             config_.client_id_path})) {
       logger_->logError("Required files do not exist.");
-      return nullopt;
+      return std::nullopt;
     }
 
     // Fill the client Id value, by reading it from the id file.
@@ -563,14 +563,14 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     if (!clientConfig) {
       logger_->logError("Client Configuration initialization failed with error \n" +
                         std::string(ErrorDebugString(clientConfig.LastError())));
-      return nullopt;
+      return std::nullopt;
     }
     client_ = std::make_shared<Aws::Iot::MqttClient>();
     auto connection = client_->NewConnection(clientConfig);
     if (!*connection) {
       logger_->logError("MQTT Connection Creation failed with error \n" +
                         std::string(ErrorDebugString(connection->LastError())));
-      return nullopt;
+      return std::nullopt;
     }
     return connection;
   }

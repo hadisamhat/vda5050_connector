@@ -1,7 +1,7 @@
 #include <boost/algorithm/string.hpp>
-#if __has_include(<optional>)
+#if __cplusplus > 201402L
 #include <optional>
-#elif __has_include(<experimental/optional>)
+#else
 #include <experimental/optional>
 namespace std {
 using namespace experimental;

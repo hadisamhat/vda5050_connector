@@ -124,7 +124,7 @@ std::optional<EdgeState> State::getEdgeStateWithId(
     const std::string& edgeId, int edgeSequenceId) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
-  if (esIterator == this->edgeStates.end()) return nullopt;
+  if (esIterator == this->edgeStates.end()) return std::nullopt;
   return *esIterator;
 }
 
@@ -139,7 +139,7 @@ std::optional<NodeState> State::getNodeStateWithId(
     const std::string& nodeId, int nodeSequenceId) {
   auto nsIterator = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& ns) { return ns.nodeId == nodeId && ns.sequenceId == nodeSequenceId; });
-  if (nsIterator == this->nodeStates.end()) return nullopt;
+  if (nsIterator == this->nodeStates.end()) return std::nullopt;
   return *nsIterator;
 }
 
@@ -153,7 +153,7 @@ std::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
   auto it = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [sequenceId](const NodeState& ns) { return ns.sequenceId == sequenceId; });
 
-  if (it == this->nodeStates.end()) return nullopt;
+  if (it == this->nodeStates.end()) return std::nullopt;
   return *it;
 }
 
@@ -166,7 +166,7 @@ std::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
 std::optional<ActionState> State::getActionStateWithId(const std::string& actionId) {
   auto actionIt = find_if(this->actionStates.begin(), this->actionStates.end(),
       [actionId](const ActionState& as) { return as.actionId == actionId; });
-  if (actionIt == this->actionStates.end()) return nullopt;
+  if (actionIt == this->actionStates.end()) return std::nullopt;
   return *actionIt;
 }
 

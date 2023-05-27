@@ -7,8 +7,6 @@ namespace std {
 using namespace experimental;
 }
 #endif
-#include <optional>
-#endif
 #include "vda5050_connector_interface/BaseProtocolHeader.hpp"
 
 namespace vda5050_connector {

@@ -58,9 +58,6 @@ set(CPP_FILES
       src/NodePosition.cpp
       src/Visualization.cpp
       src/Connection.cpp
-      # src/manager_fsm/manager_fsm.cpp
-      # src/manager_fsm/states.cpp
-      # src/manager_fsm/transitions.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${CPP_FILES})

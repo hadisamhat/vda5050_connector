@@ -10,14 +10,13 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 #pragma once
 
 #include <chrono>
-#if __cplusplus < 201703L
+#if __has_include(<optional>)
+#include <optional>
+#elif __has_include(<experimental/optional>)
 #include <experimental/optional>
 namespace std {
-namespace experimental {}
 using namespace experimental;
-}  // namespace std
-#else
-#include <optional>
+}
 #endif
 #include <functional>
 #include <map>

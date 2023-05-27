@@ -12,24 +12,21 @@
 #include <condition_variable>
 #include <cstdarg>
 #include <cstring>
-#if __cplusplus < 201703L
+#if __has_include(<optional>)
+#include <optional>
+#elif __has_include(<experimental/optional>)
 #include <experimental/optional>
 namespace std {
-namespace experimental {}
 using namespace experimental;
-}  // namespace std
-#else
-#include <optional>
+}
 #endif
-#if __cplusplus < 201703L
+#if __has_include(<filesystem>)
+#include <filesystem>
+#elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
-namespace std {
 namespace std {
 namespace filesystem = std::experimental::filesystem;
 }
-}
-#else
-#include <filesystem>
 #endif
 #include <fstream>
 #include <future>
@@ -354,9 +351,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           // Invoked when a MQTT connection was interrupted/lost, but then reconnected
           // successfully
           connection_->OnConnectionResumed = [this](Aws::Crt::Mqtt::MqttConnection&,
-                                                 Aws::Crt::Mqtt::ReturnCode, bool) {
-            logger_->logInfo("Connection resumed");
-          };
+                                                 Aws::Crt::Mqtt::ReturnCode,
+                                                 bool) { logger_->logInfo("Connection resumed"); };
 
           logger_->logInfo("Connecting to AWS broker ...");
           if (!connection_->Connect(client_id_.c_str(), false, 1000)) {

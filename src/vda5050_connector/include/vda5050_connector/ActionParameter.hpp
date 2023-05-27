@@ -1,13 +1,12 @@
 #pragma once
 #include <boost/algorithm/string.hpp>
-#if __cplusplus < 201703L
+#if __has_include(<optional>)
+#include <optional>
+#elif __has_include(<experimental/optional>)
 #include <experimental/optional>
 namespace std {
-namespace experimental {}
 using namespace experimental;
-}  // namespace std
-#else
-#include <optional>
+}
 #endif
 #include "vda5050_connector_interface/BaseActionParameter.hpp"
 

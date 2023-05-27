@@ -8,12 +8,12 @@ def get_vda5050_deps():
     """Loads external dependencies required to build apps"""
     new_git_repository(
         name = "nlohmann_json",
-        build_file = clean_dep("//third_party:nlohmann_json.BUILD"),
-        tag = "v3.10.0",
-        remote = "https://github.com/nlohmann/json.git",
-    )
+        remote = "https://github.com/hadisamhat/nlohmann_json.git",
+        commit = "cffcb2a767eba4f19523b7a1bcc87f2e0b02100e",
+        build_file = clean_dep("//third_party:nlohmann_json.BUILD"))
+
     new_git_repository(
         name = "aws_iot_sdk_cpp_v2",
         remote = "https://github.com/hadisamhat/aws_sdk_precompiled.git",
         commit = "f03f9bd610beafce4d395b4e0b7946ea52e776c5",
-        build_file = clean_dep("//third_party:aws_iot_sdk_cpp_v2.BUILD")    )
+        build_file = clean_dep("//third_party:aws_iot_sdk_cpp_v2.BUILD"))

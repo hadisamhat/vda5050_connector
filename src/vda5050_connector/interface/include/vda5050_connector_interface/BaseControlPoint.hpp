@@ -1,11 +1,11 @@
 #pragma once
-#if __cplusplus < 201703L
+#if __has_include(<optional>)
+#include <optional>
+#elif __has_include(<experimental/optional>)
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional;
+using namespace experimental;
 }
-#else
-#include <optional>
 #endif
 #include "vda5050_connector_interface/BaseInterface.hpp"
 

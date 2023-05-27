@@ -1,10 +1,10 @@
-#if __cplusplus < 201703L
+#if __has_include(<optional>)
+#include <optional>
+#elif __has_include(<experimental/optional>)
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional;
+using namespace experimental;
 }
-#else
-#include <optional>
 #endif
 #include "iw_vda5050_connector/ZoneParameter.hpp"
 #include "vda5050_connector/PolygonPoint.hpp"

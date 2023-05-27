@@ -15,15 +15,18 @@
 #if __cplusplus < 201703L
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional;
-}
+namespace experimental {}
+using namespace experimental;
+}  // namespace std
 #else
 #include <optional>
 #endif
 #if __cplusplus < 201703L
 #include <experimental/filesystem>
 namespace std {
-using filesystem = experimental::filesystem;
+namespace std {
+namespace filesystem = std::experimental::filesystem;
+}
 }
 #else
 #include <filesystem>

@@ -7,6 +7,8 @@
 #include "vda5050_connector/Order.hpp"
 #include "vda5050_connector/State.hpp"
 #include "vda5050_connector/Visualization.hpp"
+#include <optional>
+
 
 using namespace vda5050_connector::impl;
 using namespace vda5050_connector::interface;

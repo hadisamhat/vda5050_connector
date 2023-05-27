@@ -13,8 +13,9 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 #if __cplusplus < 201703L
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional;
-}
+namespace experimental {}
+using namespace experimental;
+}  // namespace std
 #else
 #include <optional>
 #endif

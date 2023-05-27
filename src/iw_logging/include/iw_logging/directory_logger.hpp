@@ -3,13 +3,13 @@
 #include <algorithm>
 #include <deque>
 #include <exception>
-#if __cplusplus < 201703L
+#if __has_include(<filesystem>)
+#include <filesystem>
+#elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 namespace std {
-using filesystem = experimental::filesystem;
+namespace filesystem = std::experimental::filesystem;
 }
-#else
-#include <filesystem>
 #endif
 #include <iomanip>
 #include <sstream>

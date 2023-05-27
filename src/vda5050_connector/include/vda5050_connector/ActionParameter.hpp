@@ -3,8 +3,9 @@
 #if __cplusplus < 201703L
 #include <experimental/optional>
 namespace std {
-using optional = experimental::optional;
-}
+namespace experimental {}
+using namespace experimental;
+}  // namespace std
 #else
 #include <optional>
 #endif

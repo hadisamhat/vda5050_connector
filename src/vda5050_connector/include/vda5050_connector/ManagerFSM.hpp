@@ -45,7 +45,6 @@ using namespace std::chrono;
 using namespace std;
 using Json = nlohmann::json;
 namespace filesys = std::filesystem;
-using namespace boost::posix_time;
 namespace vda5050_connector {
 namespace impl {
 
@@ -298,8 +297,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   static const std::map<vda5050_connector::interface::FSMState, std::string> state_to_str_;
 
   std::string getISOCurrentTimestamp() {
-    ptime t = microsec_clock::universal_time();
-    auto timestamp = to_iso_extended_string(t);
+    boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
+    auto timestamp = boost::posix_time::to_iso_extended_string(t);
     // Remove last three  numbers from the iso string to only contain three numbers after the last
     // dot.
     timestamp.pop_back();

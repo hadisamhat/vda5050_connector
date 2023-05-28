@@ -30,13 +30,13 @@ class State : public vda5050_connector::interface::BaseState<ProtocolHeader, Ord
 
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
-  std::optional<EdgeState> getEdgeStateWithId(
+  std::experimental::optional<EdgeState> getEdgeStateWithId(
       const std::string& edgeId, int edgeSequenceId) override;
-  std::optional<NodeState> getNodeStateWithId(
+  std::experimental::optional<NodeState> getNodeStateWithId(
       const std::string& nodeId, int nodeSequenceId) override;
-  std::optional<ActionState> getActionStateWithId(
+  std::experimental::optional<ActionState> getActionStateWithId(
       const std::string& actionId) override;
-  std::optional<NodeState> getNodeStateWithSequenceId(int sequenceId) override;
+  std::experimental::optional<NodeState> getNodeStateWithSequenceId(int sequenceId) override;
   bool removeActionStateWithId(const std::string& actionId) override;
   bool removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) override;
   bool removeEdgeStateWithId(const std::string& edgeId, int edgeSequenceId) override;

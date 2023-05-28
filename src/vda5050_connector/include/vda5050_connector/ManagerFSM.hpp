@@ -12,14 +12,8 @@
 #include <condition_variable>
 #include <cstdarg>
 #include <cstring>
-#if __cplusplus > 201402L
-#include <filesystem>
-#else
 #include <experimental/filesystem>
-namespace std {
-using namespace experimental;
-}
-#endif
+
 #include <experimental/optional>
 #include <fstream>
 #include <future>
@@ -37,7 +31,7 @@ using namespace Aws::Crt;
 using namespace std::chrono;
 using namespace std;
 using Json = nlohmann::json;
-namespace filesys = std::filesystem;
+namespace filesys = std::experimental::filesystem;
 namespace vda5050_connector {
 namespace impl {
 

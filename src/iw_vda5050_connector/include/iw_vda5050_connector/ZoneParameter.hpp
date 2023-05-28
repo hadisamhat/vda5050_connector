@@ -1,12 +1,6 @@
 #include <boost/algorithm/string.hpp>
-#if __cplusplus > 201402L
-#include <optional>
-#else
 #include <experimental/optional>
-namespace std {
-using namespace experimental;
-}
-#endif
+
 #include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace iw {

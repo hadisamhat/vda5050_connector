@@ -10,17 +10,17 @@ class Order : public interface::BaseOrder<ProtocolHeader, Edge, Node> {
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
-  std::optional<Edge> getEdgeWithId(
+  std::experimental::optional<Edge> getEdgeWithId(
       const std::string& edgeId, int edgeSequenceId) override;
-  std::optional<Edge> getEdgeWithStartNodeId(
+  std::experimental::optional<Edge> getEdgeWithStartNodeId(
       const std::string& startNodeId, int edgeSequenceId) const override;
-  std::optional<Edge> getEdgeWithEndNodeId(
+  std::experimental::optional<Edge> getEdgeWithEndNodeId(
       const std::string& endNodeId, int edgeSequenceId) const override;
-  std::optional<Node> getNodeWithId(
+  std::experimental::optional<Node> getNodeWithId(
       const std::string& nodeId, int nodeSequenceId) const override;
-  std::optional<Node> getNodeWithSequenceId(int sequenceId) override;
+  std::experimental::optional<Node> getNodeWithSequenceId(int sequenceId) override;
 
-  std::optional<Node> getLastReleasedNode() override;
+  std::experimental::optional<Node> getLastReleasedNode() override;
 
   int getNumberOfReleasedNodes() override;
 
@@ -28,9 +28,9 @@ class Order : public interface::BaseOrder<ProtocolHeader, Edge, Node> {
 
   bool hasCorrectNodeCount() override;
 
-  std::optional<Node> getNextNode(
+  std::experimental::optional<Node> getNextNode(
       const std::string& prevNodeId, int prevNodeSequenceId) const override;
-  std::optional<Node> getPreviousNode(
+  std::experimental::optional<Node> getPreviousNode(
       const std::string& nodeId, int nodeSequenceId) const override;
 
   void updateNodeWithId(

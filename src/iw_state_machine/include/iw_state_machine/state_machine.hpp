@@ -10,14 +10,8 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 #pragma once
 
 
-#if __cplusplus > 201402L
-#include <optional>
-#else
 #include <experimental/optional>
-namespace std {
-using namespace experimental;
-}
-#endif
+
 
 #include <functional>
 #include <map>
@@ -30,7 +24,7 @@ using namespace experimental;
 namespace iw {
 namespace state_machine {
 
-using std::optional;
+using std::experimental::optional;
 
 /// A basic state machine.
 ///
@@ -178,7 +172,7 @@ class StateMachine {
       throw(std::runtime_error("SM: Can not exit from state because not in a state"));
     }
     findState(*current_state_).on_exit_action();
-    current_state_ = std::nullopt;
+    current_state_ = std::experimental::nullopt;
   }
 
   /// Function to convert a state identifier to a string

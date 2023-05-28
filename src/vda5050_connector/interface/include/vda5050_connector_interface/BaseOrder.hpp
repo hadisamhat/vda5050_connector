@@ -1,12 +1,6 @@
 #pragma once
-#if __cplusplus > 201402L
-#include <optional>
-#else
 #include <experimental/optional>
-namespace std {
-using namespace experimental;
-}
-#endif
+
 #include "vda5050_connector_interface/BaseTopicInterface.hpp"
 
 namespace vda5050_connector {
@@ -21,18 +15,18 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
   std::vector<NodeT> nodes;
   std::vector<EdgeT> edges;
 
-  virtual std::optional<EdgeT> getEdgeWithId(
+  virtual std::experimental::optional<EdgeT> getEdgeWithId(
       const std::string& edgeId, int edgeSequenceId) = 0;
-  virtual std::optional<EdgeT> getEdgeWithStartNodeId(
+  virtual std::experimental::optional<EdgeT> getEdgeWithStartNodeId(
       const std::string& startNodeId, int edgeSequenceId) const = 0;
-  virtual std::optional<EdgeT> getEdgeWithEndNodeId(
+  virtual std::experimental::optional<EdgeT> getEdgeWithEndNodeId(
       const std::string& endNodeId, int edgeSequenceId) const = 0;
 
-  virtual std::optional<NodeT> getNodeWithId(
+  virtual std::experimental::optional<NodeT> getNodeWithId(
       const std::string& nodeId, int nodeSequenceId) const = 0;
-  virtual std::optional<NodeT> getNodeWithSequenceId(int sequenceId) = 0;
+  virtual std::experimental::optional<NodeT> getNodeWithSequenceId(int sequenceId) = 0;
 
-  virtual std::optional<NodeT> getLastReleasedNode() = 0;
+  virtual std::experimental::optional<NodeT> getLastReleasedNode() = 0;
 
   virtual int getNumberOfReleasedNodes() = 0;
 
@@ -40,9 +34,9 @@ class BaseOrder : public BaseTopicInterface<HeaderT> {
 
   virtual bool hasCorrectNodeCount() = 0;
 
-  virtual std::optional<NodeT> getNextNode(
+  virtual std::experimental::optional<NodeT> getNextNode(
       const std::string& prevNodeId, int prevNodeSequenceId) const = 0;
-  virtual std::optional<NodeT> getPreviousNode(
+  virtual std::experimental::optional<NodeT> getPreviousNode(
       const std::string& nodeId, int nodeSequenceId) const = 0;
 
   virtual void updateNodeWithId(

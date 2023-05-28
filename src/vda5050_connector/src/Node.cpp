@@ -30,18 +30,18 @@ Json Node::to_json() {
   return j;
 }
 
-std::optional<std::string> Node::getTypeFromDescription() const {
+std::experimental::optional<std::string> Node::getTypeFromDescription() const {
   std::string typestring = "Type:";
   auto type_key_idx = nodeDescription.find(typestring);
-  if (type_key_idx == std::string::npos) return std::nullopt;
-  if ((type_key_idx + typestring.size()) >= nodeDescription.size()) return std::nullopt;
+  if (type_key_idx == std::string::npos) return std::experimental::nullopt;
+  if ((type_key_idx + typestring.size()) >= nodeDescription.size()) return std::experimental::nullopt;
   constexpr char delim = ' ';
   std::stringstream ss;
   ss << this->nodeDescription.substr(type_key_idx + typestring.size(),
       nodeDescription.size() - type_key_idx - typestring.size() + 1);
   std::string section;
   std::getline(ss, section, delim);
-  if (!std::getline(ss, section, delim)) return std::nullopt;
+  if (!std::getline(ss, section, delim)) return std::experimental::nullopt;
   return section;
 }
 
@@ -54,15 +54,15 @@ void Node::fromNode(const Node& n) {
 }
 
 /**
- * @brief: returns the first occurence of an action of the type: action_type and std::nullopt if no
+ * @brief: returns the first occurence of an action of the type: action_type and std::experimental::nullopt if no
  * action of this type is found
  * @param: action_type
- * @return: std::optional<Action>
+ * @return: std::experimental::optional<Action>
  * */
-std::optional<Action> Node::tryGetActionOfType(const std::string& action_type) {
+std::experimental::optional<Action> Node::tryGetActionOfType(const std::string& action_type) {
   auto it = find_if(
       actions.begin(), actions.end(), [&](const Action& a) { return a.actionType == action_type; });
-  if (it == actions.end()) return std::nullopt;
+  if (it == actions.end()) return std::experimental::nullopt;
   return *it;
 }
 

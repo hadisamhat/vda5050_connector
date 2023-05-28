@@ -1,12 +1,6 @@
 #pragma once
-#if __cplusplus > 201402L
-#include <optional>
-#else
 #include <experimental/optional>
-namespace std {
-using namespace experimental;
-}
-#endif
+
 #include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace vda5050_connector {
@@ -22,9 +16,9 @@ class BaseNode : public BaseInterface {
   NodePositionT nodePosition;
   std::vector<ActionT> actions;
 
-  virtual std::optional<ActionT> tryGetActionOfType(const std::string& action_type) = 0;
+  virtual std::experimental::optional<ActionT> tryGetActionOfType(const std::string& action_type) = 0;
   virtual bool hasActionOfType(const std::string& action_type) const = 0;
-  virtual std::optional<std::string> getTypeFromDescription() const = 0;
+  virtual std::experimental::optional<std::string> getTypeFromDescription() const = 0;
 };
 
 }  // namespace interface

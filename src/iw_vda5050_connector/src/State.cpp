@@ -3,8 +3,8 @@
 using namespace std;
 using Json = nlohmann::json;
 using namespace std;
-using std::nullopt;
-using std::optional;
+using std::experimental::nullopt;
+using std::experimental::optional;
 
 namespace iw {
 namespace vda5050 {
@@ -120,11 +120,11 @@ void State::from_json(const Json& j) {
  * @param edgeSequenceId
  * @return EdgeState
  */
-std::optional<EdgeState> State::getEdgeStateWithId(
+std::experimental::optional<EdgeState> State::getEdgeStateWithId(
     const std::string& edgeId, int edgeSequenceId) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
-  if (esIterator == this->edgeStates.end()) return std::nullopt;
+  if (esIterator == this->edgeStates.end()) return std::experimental::nullopt;
   return *esIterator;
 }
 
@@ -135,11 +135,11 @@ std::optional<EdgeState> State::getEdgeStateWithId(
  * @param nodeSequenceId
  * @return NodeState
  */
-std::optional<NodeState> State::getNodeStateWithId(
+std::experimental::optional<NodeState> State::getNodeStateWithId(
     const std::string& nodeId, int nodeSequenceId) {
   auto nsIterator = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& ns) { return ns.nodeId == nodeId && ns.sequenceId == nodeSequenceId; });
-  if (nsIterator == this->nodeStates.end()) return std::nullopt;
+  if (nsIterator == this->nodeStates.end()) return std::experimental::nullopt;
   return *nsIterator;
 }
 
@@ -149,11 +149,11 @@ std::optional<NodeState> State::getNodeStateWithId(
  * @param sequenceId
  * @return NodeState
  */
-std::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
+std::experimental::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
   auto it = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [sequenceId](const NodeState& ns) { return ns.sequenceId == sequenceId; });
 
-  if (it == this->nodeStates.end()) return std::nullopt;
+  if (it == this->nodeStates.end()) return std::experimental::nullopt;
   return *it;
 }
 
@@ -163,10 +163,10 @@ std::optional<NodeState> State::getNodeStateWithSequenceId(int sequenceId) {
  * @param actionId
  * @return ActionState
  */
-std::optional<ActionState> State::getActionStateWithId(const std::string& actionId) {
+std::experimental::optional<ActionState> State::getActionStateWithId(const std::string& actionId) {
   auto actionIt = find_if(this->actionStates.begin(), this->actionStates.end(),
       [actionId](const ActionState& as) { return as.actionId == actionId; });
-  if (actionIt == this->actionStates.end()) return std::nullopt;
+  if (actionIt == this->actionStates.end()) return std::experimental::nullopt;
   return *actionIt;
 }
 

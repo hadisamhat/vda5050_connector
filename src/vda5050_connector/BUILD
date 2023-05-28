@@ -5,7 +5,9 @@ cc_library(
         "//src/iw_logging",
         "//src/iw_state_machine",
         "//third_party/nlohmann:json",
-        "@boost//:system"
+        "@boost//:asio",
+        "@boost//:date_time",
+        "@boost//:algorithm",
     ],
     strip_include_prefix = "interface/include"
 )

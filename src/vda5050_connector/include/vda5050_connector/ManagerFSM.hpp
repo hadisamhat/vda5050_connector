@@ -7,7 +7,7 @@
 #include <aws/iot/MqttClient.h>
 
 #include <algorithm>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time.hpp>
 #include <chrono>
 #include <condition_variable>
 #include <cstdarg>

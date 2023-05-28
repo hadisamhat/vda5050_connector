@@ -9,7 +9,8 @@ cc_library(
         "@boost//:date_time",
         "@boost//:algorithm",
     ],
-    strip_include_prefix = "interface/include"
+    strip_include_prefix = "interface/include",
+    visibility = ["//visibility:public"],
 )
 
 
@@ -20,7 +21,10 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":vda5050_connector_interface",
-        "@aws_iot_sdk_cpp_v2" 
+        "@aws_iot_sdk_cpp_v2",
+        "@boost//:asio",
+        "@boost//:date_time",
+        "@boost//:algorithm",
     ],
     strip_include_prefix = "include/"        
 )

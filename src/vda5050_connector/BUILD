@@ -3,7 +3,9 @@ cc_library(
     hdrs = glob(["interface/include/**/*.hpp"]),
     deps = [
         "//src/iw_logging",
-        "//src/iw_state_machine"
+        "//src/iw_state_machine",
+        "//third_party/nlohmann:json",
+        "@boost//:asio"
     ],
     strip_include_prefix = "interface/include"
 )

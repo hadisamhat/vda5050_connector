@@ -12,7 +12,7 @@ def get_vda5050_deps():
         sha256 = "b5e3bfad07feba218a26a4f809fbb0d1e33450524bf5d7244cabc92cf8178c69",
         type = "zip",
         url = "https://github.com/nlohmann/json/releases/download/v3.10.0/include.zip",
-        build_file = "//third_party:nlohmann_json.BUILD",
+        build_file = clean_dep("//third_party:nlohmann_json.BUILD"),
         )
 
     new_git_repository(

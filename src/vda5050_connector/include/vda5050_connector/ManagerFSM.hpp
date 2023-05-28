@@ -20,14 +20,7 @@ namespace std {
 using namespace experimental;
 }
 #endif
-#if __cplusplus > 201402L
-#include <optional>
-#else
 #include <experimental/optional>
-namespace std {
-using namespace experimental;
-}
-#endif
 #include <fstream>
 #include <future>
 #include <iomanip>
@@ -262,7 +255,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
  protected:
   Aws::Crt::ApiHandle apiHandle;
-  std::optional<std::string> error_;
+  std::experimental::optional<std::string> error_;
   std::atomic<bool> stop_{false};
 
   std::string client_id_;
@@ -537,11 +530,11 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     connection_closed_promise_.get_future().wait();
   }
 
-  std::optional<std::shared_ptr<Aws::Crt::Mqtt::MqttConnection>> initializeTLS() {
+  std::experimental::optional<std::shared_ptr<Aws::Crt::Mqtt::MqttConnection>> initializeTLS() {
     if (!filesExist({config_.root_ca_path, config_.cert_path, config_.priv_key_path,
             config_.client_id_path})) {
       logger_->logError("Required files do not exist.");
-      return std::nullopt;
+      return std::experimental::nullopt;
     }
 
     // Fill the client Id value, by reading it from the id file.
@@ -562,14 +555,14 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     if (!clientConfig) {
       logger_->logError("Client Configuration initialization failed with error \n" +
                         std::string(ErrorDebugString(clientConfig.LastError())));
-      return std::nullopt;
+      return std::experimental::nullopt;
     }
     client_ = std::make_shared<Aws::Iot::MqttClient>();
     auto connection = client_->NewConnection(clientConfig);
     if (!*connection) {
       logger_->logError("MQTT Connection Creation failed with error \n" +
                         std::string(ErrorDebugString(connection->LastError())));
-      return std::nullopt;
+      return std::experimental::nullopt;
     }
     return connection;
   }

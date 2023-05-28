@@ -1,5 +1,5 @@
 cc_library(
-    name = "nlohmann_json",
+    name = "json",
     hdrs = glob([
         "include/**/*.hpp",
     ]),

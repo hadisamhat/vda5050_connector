@@ -8,7 +8,7 @@ def clean_dep(dep):
 def get_vda5050_deps():
     """Loads external dependencies required to build apps"""
     http_archive(
-        name = "nlohmann_json",
+        name = "github_nlohmann_json",
         sha256 = "b5e3bfad07feba218a26a4f809fbb0d1e33450524bf5d7244cabc92cf8178c69",
         type = "zip",
         url = "https://github.com/nlohmann/json/releases/download/v3.10.0/include.zip",

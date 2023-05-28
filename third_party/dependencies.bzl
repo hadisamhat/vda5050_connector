@@ -6,13 +6,14 @@ def clean_dep(dep):
     return str(Label(dep))
 
 def get_vda5050_deps():
-    """Loads external dependencies required to build apps"""
+
     # http_archive(
-    #     name = "github_nlohmann_json",
-    #     sha256 = "230f3a03cefd586661ebab577a347c973d97a770afb89e22c52abc3c2a19d0a7",
-    #     url = "https://github.com/nlohmann/json/releases/download/v3.10.0/json.hpp",
-    #     build_file = clean_dep("//third_party:nlohmann_json.BUILD"),
-    #     )
+    # name = "com_github_nelhage_rules_boost",
+    # patches = ["//third_party:rules_boost.patch"],
+    # build_file = clean_dep("//third_party:asio.BUILD"),
+    # sha256 = "1479f6a46d37c415b0f803186bacb7a78f76305331c556bba20d13247622752a",
+    # type = "tar.gz",
+    # url = "https://developer.nvidia.com/isaac/download/third_party/rules_boost-82ae1790cef07f3fd618592ad227fe2d66fe0b31-tar-gz")
 
     new_git_repository(
         name = "aws_iot_sdk_cpp_v2",

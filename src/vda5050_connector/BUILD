@@ -1,7 +1,6 @@
 cc_library(
     name = "vda5050_connector_interface",
     hdrs = glob(["interface/include/**/*.hpp"]),
-    visibility = ["//visibility:public"],
     deps = [
         "//third_party/nlohmann:json",
         "@boost//:asio",

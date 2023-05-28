@@ -1,6 +1,9 @@
 cc_library(
     name = "nlohmann_json",
-    hdrs = glob(["include/**"]),
+    hdrs = glob([
+        "include/**/*.hpp",
+    ]),
+    includes = ["include"],
     visibility = ["//visibility:public"],
-    strip_include_prefix = "include/"
+    alwayslink = 1,
 )

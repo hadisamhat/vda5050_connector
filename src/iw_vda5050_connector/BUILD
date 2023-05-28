@@ -11,7 +11,9 @@ cc_library(
     hdrs = glob(["include/**/*.hpp"]),
     visibility = ["//visibility:public"],
     deps = [
-        "//src/vda5050_connector"
+        "//src/vda5050_connector",
+        "//third_party/nlohmann:json",
+        "@boost//:asio",
     ],
     strip_include_prefix = "include/",
     copts = ["-Wno-reorder"]

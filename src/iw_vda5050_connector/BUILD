@@ -1,7 +1,8 @@
 package_group(
     name = "vda_5050_group",
     packages = [
-        "//src/vda5050_connector"
+        "//src/vda5050_connector",
+        "//src/iw_vda5050_connector",
     ],
 )
 
@@ -13,7 +14,6 @@ cc_library(
     deps = [
         "//src/vda5050_connector",
         "//third_party/nlohmann:json",
-        "@boost//:asio",
     ],
     strip_include_prefix = "include/",
     copts = ["-Wno-reorder"]

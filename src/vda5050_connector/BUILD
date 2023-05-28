@@ -3,7 +3,7 @@ cc_library(
     hdrs = glob(["interface/include/**/*.hpp"]),
     visibility = ["//visibility:public"],
     deps = [
-        "@github_nlohmann_json//:json",
+        "//third_party/nlohmann:json",
         "@boost//:asio",
         "//src/iw_logging",
         "//src/iw_state_machine"

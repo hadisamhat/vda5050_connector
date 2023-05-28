@@ -7,6 +7,7 @@ and any modifications thereto. Any use, reproduction, disclosure or
 distribution of this software and related documentation without an express
 license agreement from NVIDIA CORPORATION is strictly prohibited.
 """
+package(default_visibility = ["//src/iw_vda5050_connector:vda_5050_group"])
 
 cc_library(
     name = "asio",
@@ -28,7 +29,7 @@ cc_library(
         "include",
     ],
     linkopts = ["-pthread"],
-    visibility = ["//visibility:public"],
+    visibility = ["//src/iw_vda5050_connector:vda_5050_group"],
 )
 
 cc_binary(

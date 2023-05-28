@@ -6,6 +6,7 @@ aarch64_build/
 aarch64_devel/
 aarch64_install/
 logs/
+bazel-*/
 
 # Other arch builds
 build_*/

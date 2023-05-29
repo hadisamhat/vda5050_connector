@@ -1,10 +1,18 @@
+
+cc_library(
+    name = "json",
+    hdrs = ["third_party/nlohmann/json.hpp"],
+    strip_include_prefix = "/third_party",
+    visibility = ["//src/iw_vda5050_connector:private"],
+)
+
 cc_library(
     name = "vda5050_connector_interface",
     hdrs = glob(["interface/include/**/*.hpp"]),
     deps = [
         "//src/iw_logging",
         "//src/iw_state_machine",
-        "//third_party/nlohmann:json",
+        ":json",
         "@boost//:asio",
         "@boost//:date_time",
         "@boost//:algorithm",

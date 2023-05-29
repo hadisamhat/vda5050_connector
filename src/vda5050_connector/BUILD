@@ -1,10 +1,18 @@
+licenses(["notice"])  # MIT
+
+cc_library(
+    name = "json_prvt",
+    hdrs = ["nlohmann/json.hpp"],
+    visibility = ["//visibility:private"],
+)
+
 cc_library(
     name = "vda5050_connector_interface",
     hdrs = glob(["interface/include/**/*.hpp"]),
     deps = [
         "//src/iw_logging",
         "//src/iw_state_machine",
-        "//third_party/nlohmann:json",
+        ":json_prvt",
         "@boost//:asio",
         "@boost//:date_time",
         "@boost//:algorithm",

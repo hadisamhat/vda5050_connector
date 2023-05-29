@@ -5,7 +5,7 @@ cc_library(
     deps = [
         "//src/iw_logging",
         "//src/iw_state_machine",
-        "@com_nvidia_isaac_engine//third_party/nlohmann",
+        "//third_party/nlohmann_json",
         "@boost//:asio",
         "@boost//:date_time",
         "@boost//:algorithm",

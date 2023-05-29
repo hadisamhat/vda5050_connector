@@ -1,1 +1,9 @@
 build --cxxopt='-std=c++14' 
+build --define=target_platform=x86_64 --strip=always
+build --action_env=target_platform="x86_64"
+build:x86_64 --define=target_platform=x86_64
+build:x86_64 --action_env=target_platform="x86_64"
+
+build:jetpack44 --cpu=aarch64
+build:jetpack44 --define=target_platform=jetpack44
+build:jetpack44 --action_env=target_platform="jetpack44"

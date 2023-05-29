@@ -10,9 +10,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # custom bazel build support (https://github.com/nelhage/rules_boost/)
 # explicitly due to bazel bug: https://github.com/bazelbuild/bazel/issues/1550
 
-isaac_http_archive(
+http_archive(
     name = "com_github_nelhage_rules_boost",
-    licenses = ["@com_github_nelhage_rules_boost//:LICENSE"],
     patches = ["//third_party:rules_boost.patch"],
     sha256 = "1479f6a46d37c415b0f803186bacb7a78f76305331c556bba20d13247622752a",
     type = "tar.gz",

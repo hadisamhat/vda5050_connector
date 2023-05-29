@@ -5,7 +5,7 @@ cc_library(
     deps = [
         "//src/iw_logging",
         "//src/iw_state_machine",
-        "//third_party/nlohmann_json",
+        "//third_party/nlohmann:json",
         "@boost//:asio",
         "@boost//:date_time",
         "@boost//:algorithm",

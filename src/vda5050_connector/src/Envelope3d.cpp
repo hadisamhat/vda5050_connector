@@ -14,7 +14,7 @@ Json Envelope3d::to_json() {
 void Envelope3d::from_json(const Json& j) {
   j.at("set").get_to(this->set);
   j.at("format").get_to(this->format);
-  j.at("data").get_to(this->data);
+  this->data = j.at("data");
   j.at("url").get_to(this->url);
   j.at("description").get_to(this->description);
 }

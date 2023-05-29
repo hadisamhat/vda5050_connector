@@ -1,8 +1,8 @@
 
 cc_library(
     name = "json",
-    hdrs = ["third_party/nlohmann/json.hpp"],
-    strip_include_prefix = "/src/vda5050_connector/third_party",
+    hdrs = ["//third_party/nlohmann/json.hpp"],
+    strip_include_prefix = "third_party/",
     visibility = ["//visibility:private"],
 )
 

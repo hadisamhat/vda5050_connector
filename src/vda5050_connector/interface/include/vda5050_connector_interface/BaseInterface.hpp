@@ -3,7 +3,7 @@
 
 #include "iw_logging/logger_base.hpp"
 #include "iw_logging/std_logger.hpp"
-#include "nlohmann/json.hpp"
+#include "third_party/nlohmann/json.hpp"
 
 namespace vda5050_connector {
 namespace interface {

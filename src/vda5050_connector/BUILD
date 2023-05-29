@@ -1,18 +1,11 @@
 licenses(["notice"])  # MIT
-
-cc_library(
-    name = "json_prvt",
-    hdrs = ["nlohmann/json.hpp"],
-    visibility = ["//visibility:private"],
-)
-
 cc_library(
     name = "vda5050_connector_interface",
     hdrs = glob(["interface/include/**/*.hpp"]),
     deps = [
         "//src/iw_logging",
         "//src/iw_state_machine",
-        ":json_prvt",
+        "@com_nvidia_isaac_engine//third_party/nlohmann",
         "@boost//:asio",
         "@boost//:date_time",
         "@boost//:algorithm",

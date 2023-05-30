@@ -21,5 +21,7 @@ cc_library(
     strip_include_prefix= select({
         ":platform_x86_64" : "install_shared/include",
         ":platform_jetpack44": "install_aarch64/include"}),
+    alwayslink = True,
+    linkstatic = True,
     visibility=["//visibility:public"]
 )

@@ -16,8 +16,8 @@ cc_library(
         ":platform_x86_64" : glob(["install_x86/include/**"]),
         ":platform_jetpack44":  glob(["install_aarch64/include/**"])}),
     srcs = select({
-        ":platform_x86_64" : glob(["install_x86/lib/*.so.*","install_x86/lib/*.so"]),
-        ":platform_jetpack44":  glob(["install_aarch64/lib/*.so.*","install_aarch64/lib/*.so"])}),
+        ":platform_x86_64" : glob(["install_x86/lib/*.*"]),
+        ":platform_jetpack44":  glob(["install_aarch64/lib/*.*"])}),
     strip_include_prefix= select({
         ":platform_x86_64" : "install_x86/include",
         ":platform_jetpack44": "install_aarch64/include"}),

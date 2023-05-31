@@ -22,6 +22,5 @@ cc_library(
         ":platform_x86_64" : "install_x86/include",
         ":platform_jetpack44": "install_aarch64/include"}),
     alwayslink = True,
-    linkstatic = True,
     visibility=["//visibility:public"]
 )

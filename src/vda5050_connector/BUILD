@@ -24,5 +24,7 @@ cc_library(
         ":vda5050_connector_interface",
         "@aws_iot_sdk_cpp_v2"
     ],
+    alwayslink = True,
+    linkstatic = 1,
     strip_include_prefix = "include/"        
 )

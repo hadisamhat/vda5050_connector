@@ -19,5 +19,5 @@ def get_vda5050_deps():
     new_git_repository(
         name = "aws_iot_sdk_cpp_v2",
         remote = "https://github.com/hadisamhat/aws_sdk_precompiled.git",
-        commit = "257ee6dfdf07beea0cb56bd6a680ce750f4e19dc",
+        commit = "d4a2e9f6a6d033e48803215705245f2b7f324500",
         build_file = clean_dep("//third_party:aws_iot_sdk_cpp_v2.BUILD"))

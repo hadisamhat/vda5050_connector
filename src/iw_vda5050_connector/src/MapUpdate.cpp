@@ -12,7 +12,9 @@ Json MapUpdate::to_json() {
       {"mapCompression", this->mapCompression}, {"mapDownloadLink", this->mapDownloadLink},
       {"mapDownloadProtocol", this->mapDownloadProtocol},
       {"mapCreationDate", this->mapCreationDate}, {"mapName", this->mapName},
-      {"mapDescription", this->mapDescription}, {"mapReferenceHeight", this->mapReferenceHeight}};
+      {"mapDescription", this->mapDescription}, {"mapReferenceHeight", this->mapReferenceHeight},
+      {"mapMetaData", this->metaData.to_json()}};
+
   j.merge_patch(this->header.to_json());
   return j;
 }
@@ -24,7 +26,7 @@ void MapUpdate::from_json(const Json& j) {
   j.at("mapCompression").get_to(this->mapCompression);
   j.at("mapDownloadLink").get_to(this->mapDownloadLink);
   j.at("mapDownloadProtocol").get_to(this->mapDownloadProtocol);
-
+  this->metaData.from_json(j.at("mapMetaData"));
   if (!j.at("mapCreationDate").is_null()) {
     j.at("mapCreationDate").get_to(this->mapCreationDate);
   }

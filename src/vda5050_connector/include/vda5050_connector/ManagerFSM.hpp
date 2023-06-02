@@ -13,7 +13,6 @@
 #include <cstdarg>
 #include <cstring>
 #include <experimental/filesystem>
-
 #include <experimental/optional>
 #include <fstream>
 #include <future>
@@ -544,6 +543,9 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
     clientConfigBuilder.WithCertificateAuthority(config_.root_ca_path.c_str());
 
+    if (config_.mqtt_port != 0) {
+      clientConfigBuilder.WithPortOverride(static_cast<uint16_t>(config_.mqtt_port));
+    }
     // Create the MQTT connection from the MQTT builder
     auto clientConfig = clientConfigBuilder.Build();
     if (!clientConfig) {

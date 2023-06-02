@@ -20,6 +20,7 @@ class BaseNetworkConfiguration {
   std::string mode;
   std::string dev_topic_prefix;
   std::string qa_topic_prefix;
+  std::string signing_region;
 
   std::string instant_action_topic_name;
   std::string order_topic_name;
@@ -31,6 +32,7 @@ class BaseNetworkConfiguration {
   int max_reconnect_attempts;
   int min_reconnect_backoff_sec;
   int max_reconnect_backoff_sec;
+  int mqtt_port{0};
 
   int connection_state_interval_secs;
   int state_interval_secs;

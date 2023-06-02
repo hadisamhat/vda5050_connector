@@ -1,5 +1,6 @@
 #pragma once
 
+#include "iw_vda5050_connector/MetaData.hpp"
 #include "vda5050_connector/ProtocolHeader.hpp"
 #include "vda5050_connector_interface/BaseTopicInterface.hpp"
 
@@ -17,6 +18,7 @@ class MapUpdate : public vda5050_connector::interface::BaseTopicInterface<
   std::string mapName;          // OPTIONAL
   std::string mapDescription;   // OPTIONAL
   float mapReferenceHeight;     // OPTIONAL, Unit : meters
+  MetaData metaData;
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
 };

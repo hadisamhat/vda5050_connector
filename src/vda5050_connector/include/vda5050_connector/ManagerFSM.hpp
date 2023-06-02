@@ -42,16 +42,16 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                        VisualizationMsg, ConnectionMsg, FactSheetMsg> {
  public:
   ManagerFSM(interface::BaseNetworkConfiguration config, boost::asio::io_context& io_context)
-      : logger_(std::make_shared<iw::logging::StdLogger>()),
-        state_machine_(std::make_shared<
-            iw::state_machine::StateMachine<vda5050_connector::interface::FSMState>>(
-            getName(), logger_)),
-        io_context_(io_context),
+      : io_context_(io_context),
         tick_timer_(io_context_),
         state_timer_(io_context_),
         visualization_timer_(io_context_),
         connection_timer_(io_context_),
         fact_sheet_timer_(io_context_) {
+    logger_ = std::make_shared<iw::logging::StdLogger>();
+    state_machine_ =
+        std::make_shared<iw::state_machine::StateMachine<vda5050_connector::interface::FSMState>>(
+            getName(), logger_);
     config_ = config;
   }
 

@@ -4,7 +4,7 @@
 
 namespace iw {
 namespace vda5050 {
-class Position : public vda5050_connector::interface::BaseInterface {
+class Position3d : public vda5050_connector::interface::BaseInterface {
  public:
   double x{0};
   double y{0};

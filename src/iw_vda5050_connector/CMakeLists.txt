@@ -19,7 +19,7 @@ set(CPP_FILES
       src/Visualization.cpp
       src/Zone.cpp
       src/MetaData.cpp
-      src/Position.cpp
+      src/Position3d.cpp
       src/ZoneParameter.cpp
       src/ZoneUpdate.cpp
       src/Vda5050Manager.cpp

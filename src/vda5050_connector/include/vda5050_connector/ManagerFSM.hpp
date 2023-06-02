@@ -422,8 +422,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
             });
           }
           if (tx_connection_.enable) {
-            setupPublisher(connection_timer_,
-                tx_connection_.topic_name,` tx_connection_.update_time_s, [this]() {
+            setupPublisher(connection_timer_, tx_connection_.topic_name,
+                tx_connection_.update_time_s, [this]() {
                   tx_connection_.msg.header.headerId++;
                   tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();
                   tx_connection_.msg.header.version = config_.protocol_version;

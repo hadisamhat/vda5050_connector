@@ -148,7 +148,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_state_.msg.header.manufacturer = config_.manufacturer;
       tx_state_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_state_.msg.to_json();
-      logger_->logInfo("publishing update state msg" + j.dump());
+      // logger_->logInfo("publishing update state msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -165,7 +165,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_visualization_.msg.header.manufacturer = config_.manufacturer;
       tx_visualization_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_visualization_.msg.to_json();
-      logger_->logInfo("publishing update visualization msg" + j.dump());
+      // logger_->logInfo("publishing update visualization msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -182,7 +182,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_connection_.msg.header.manufacturer = config_.manufacturer;
       tx_connection_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_connection_.msg.to_json();
-      logger_->logInfo("publishing update connection msg" + j.dump());
+      // logger_->logInfo("publishing update connection msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -199,7 +199,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_fact_sheet_.msg.header.manufacturer = config_.manufacturer;
       tx_fact_sheet_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_fact_sheet_.msg.to_json();
-      logger_->logInfo("publishing update fact_sheet msg" + j.dump());
+      // logger_->logInfo("publishing update fact_sheet msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -340,7 +340,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                                  bool) { logger_->logInfo("Connection resumed"); };
 
           logger_->logInfo("Connecting to AWS broker ...");
-          if (!connection_->Connect(client_id_.c_str(), false, 1000)) {
+          if (!connection_->Connect(client_id_.c_str(), true, 1000)) {
             error_ = "Failed to Connect To AWS Broker " +
                      std::string(ErrorDebugString(connection_->LastError()));
           };
@@ -422,8 +422,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
             });
           }
           if (tx_connection_.enable) {
-            setupPublisher(connection_timer_, tx_connection_.topic_name,
-                tx_connection_.update_time_s, [this]() {
+            setupPublisher(connection_timer_,
+                tx_connection_.topic_name,` tx_connection_.update_time_s, [this]() {
                   tx_connection_.msg.header.headerId++;
                   tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();
                   tx_connection_.msg.header.version = config_.protocol_version;

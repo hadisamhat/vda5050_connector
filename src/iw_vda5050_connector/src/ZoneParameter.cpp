@@ -19,7 +19,7 @@ Json ZoneParameter::to_json() {
 }
 void ZoneParameter::from_json(const Json& j) {
   this->key = to_lower_copy(j.at("key").get<string>());
-  this->value = j.at("value");
+  j.at("value").get_to(this->value);
 }
 
 }  // namespace vda5050

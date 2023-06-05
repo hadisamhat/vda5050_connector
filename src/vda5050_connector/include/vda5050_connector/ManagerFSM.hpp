@@ -34,6 +34,14 @@ namespace filesys = std::experimental::filesystem;
 namespace vda5050_connector {
 namespace impl {
 
+constexpr int disconnect_timeout_secs = 1;
+constexpr int response_timeout_ms = 3000;
+constexpr int retry_after_ms = 1000;
+constexpr int tls_handshake_timeout_ms = 60000;
+constexpr int tls_read_timeout_ms = 2000;
+constexpr int tls_write_timeout_ms = 2000;
+constexpr int tls_keep_alive_secs = 60;
+
 enum class SupportedTopic { STATE, ORDER, INSTANT_ACTION, CONNECTION, VISUALIZATION, FACT_SHEET };
 
 template <class OrderMsg, class InstantActionMsg, class StateMsg, class VisualizationMsg,
@@ -340,7 +348,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                                  bool) { logger_->logInfo("Connection resumed"); };
 
           logger_->logInfo("Connecting to AWS broker ...");
-          if (!connection_->Connect(client_id_.c_str(), true, 1000)) {
+          if (!connection_->Connect(client_id_.c_str(), true, tls_keep_alive_secs)) {
             error_ = "Failed to Connect To AWS Broker " +
                      std::string(ErrorDebugString(connection_->LastError()));
           };

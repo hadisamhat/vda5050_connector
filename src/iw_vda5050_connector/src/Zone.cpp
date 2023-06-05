@@ -15,7 +15,8 @@ Json Zone::to_json() {
   for (auto& zp : this->zoneParameters) {
     zone_params_j.push_back(zp.to_json());
   }
-  j["polygon"] = zone_params_j;
+  j["zoneParameters"] = zone_params_j;
+  
   Json polygon_j = Json::array();
   for (auto& p : this->polygon) {
     polygon_j.push_back(p.to_json());

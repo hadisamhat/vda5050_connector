@@ -182,7 +182,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   }
 
   void updateConnectionMsg(const std::function<void(ConnectionMsg&)>& func) {
-    func(&tx_connection_.msg);
+    func(tx_connection_.msg);
     io_context_.post([this]() {
       tx_connection_.msg.header.headerId++;
       tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();

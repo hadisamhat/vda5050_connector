@@ -64,9 +64,11 @@ void Visualization::from_json(const Json& j) {
   j.at("driving").get_to(this->driving);
   j.at("newBaseRequest").get_to(this->newBaseRequest);
   j.at("operatingMode").get_to(this->operatingMode);
-  j.at("distanceSinceLastNode").get_to(this->distanceSinceLastNode);
   j.at("zoneSetId").get_to(this->zoneSetId);
   j.at("waitingForInteractionZoneRelease").get_to(this->waitingForInteractionZoneRelease);
+
+  if (j.find("distanceSinceLastNode") != j.end() && !j.at("distanceSinceLastNode").is_null())
+    j.at("distanceSinceLastNode").get_to(this->distanceSinceLastNode);
 
   this->agvPosition.from_json(j.at("agvPosition"));
   this->velocity.from_json(j.at("velocity"));

@@ -21,7 +21,7 @@ void Info::from_json(const Json& j) {
   j.at("infoType").get_to(this->infoType);
   j.at("infoDescription").get_to(this->infoDescription);
   j.at("infoLevel").get_to(this->infoLevel);
-  for (const auto& j : j.at("InfoReferences")) {
+  for (const auto& j : j.at("infoReferences")) {
     InfoReference i;
     i.from_json(j);
     this->infoReferences.push_back(i);

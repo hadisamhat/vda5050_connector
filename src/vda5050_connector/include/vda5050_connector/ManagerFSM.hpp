@@ -156,7 +156,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_state_.msg.header.manufacturer = config_.manufacturer;
       tx_state_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_state_.msg.to_json();
-      logger_->logInfo("publishing update state msg" + j.dump());
+      // logger_->logInfo("publishing update state msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -173,7 +173,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_visualization_.msg.header.manufacturer = config_.manufacturer;
       tx_visualization_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_visualization_.msg.to_json();
-      logger_->logInfo("publishing update visualization msg" + j.dump());
+      // logger_->logInfo("publishing update visualization msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -182,7 +182,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   }
 
   void updateConnectionMsg(const std::function<void(ConnectionMsg&)>& func) {
-    func(tx_connection_.msg);
+    func(&tx_connection_.msg);
     io_context_.post([this]() {
       tx_connection_.msg.header.headerId++;
       tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();

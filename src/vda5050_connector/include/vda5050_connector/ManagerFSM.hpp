@@ -173,7 +173,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_visualization_.msg.header.manufacturer = config_.manufacturer;
       tx_visualization_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_visualization_.msg.to_json();
-      // logger_->logInfo("publishing update visualization msg" + j.dump());
+      logger_->logInfo("publishing update visualization msg" + j.dump());
       //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
       //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
       //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -422,7 +422,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
               tx_state_.msg.header.manufacturer = config_.manufacturer;
               tx_state_.msg.header.serialNumber = config_.serial_number;
               auto j = tx_state_.msg.to_json();
-              // logger_->logInfo("state timeout elapsed, publishing data" + j.dump());
+              logger_->logInfo("state timeout elapsed, publishing data" + j.dump());
               //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
               //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
               //   AWS_MQTT_QOS_AT_LEAST_ONCE,
@@ -438,7 +438,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                   tx_connection_.msg.header.manufacturer = config_.manufacturer;
                   tx_connection_.msg.header.serialNumber = config_.serial_number;
                   auto j = tx_connection_.msg.to_json();
-                  // logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
+                  logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
                   //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
                   //   j.dump().length());
                   //   connection_->Publish(tx_visualization_.topic_name.c_str(),
@@ -455,7 +455,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                   tx_fact_sheet_.msg.header.manufacturer = config_.manufacturer;
                   tx_fact_sheet_.msg.header.serialNumber = config_.serial_number;
                   auto j = tx_fact_sheet_.msg.to_json();
-                  // logger_->logInfo("Fact Sheet timeout elapsed, publishing data" + j.dump());
+                  logger_->logInfo("Fact Sheet timeout elapsed, publishing data" + j.dump());
                   //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
                   //   j.dump().length());
                   //   connection_->Publish(tx_visualization_.topic_name.c_str(),
@@ -472,7 +472,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                   tx_visualization_.msg.header.manufacturer = config_.manufacturer;
                   tx_visualization_.msg.header.serialNumber = config_.serial_number;
                   auto j = tx_visualization_.msg.to_json();
-                  // logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
+                  logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
                   //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
                   //   j.dump().length());
                   //   connection_->Publish(tx_visualization_.topic_name.c_str(),

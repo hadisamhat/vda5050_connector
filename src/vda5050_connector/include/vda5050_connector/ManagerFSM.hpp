@@ -582,7 +582,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
 
   void loadTopicInfoFromConfig() {
     std::string prefix =
-        ((config_.mode == "dev") ? config_.dev_topic_prefix : config_.qa_topic_prefix + "/")
+        ((config_.mode == "dev") ? config_.dev_topic_prefix + "/" : config_.qa_topic_prefix + "/")
             .append(client_id_)
             .append("/");
 

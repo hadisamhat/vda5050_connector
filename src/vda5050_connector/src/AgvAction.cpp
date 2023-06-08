@@ -14,7 +14,7 @@ void AgvAction::UpperFirst(string& s) {
 }
 
 Json AgvAction::to_json() {
-  UpperFirst(this->actionType);
+  // UpperFirst(this->actionType);
   Json j = Json{{"actionType", this->actionType}, {"actionDescription", this->actionDescription},
       {"actionScope", this->actionScope}};
   Json action_params_j = Json::array();

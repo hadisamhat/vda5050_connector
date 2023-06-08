@@ -15,7 +15,7 @@ void Action::UpperFirst(string& s) {
 }
 
 Json Action::to_json() {
-  UpperFirst(this->actionType);
+  // UpperFirst(this->actionType);
   Json j = Json{{"actionType", this->actionType}, {"actionId", this->actionId},
       {"actionDescription", this->actionDescription}, {"blockingType", this->actionBlockingType}};
   Json action_params_j = Json::array();

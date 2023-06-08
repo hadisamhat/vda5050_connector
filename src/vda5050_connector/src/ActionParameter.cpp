@@ -19,7 +19,7 @@ bool ActionParameter::operator==(const ActionParameter& ap) const {
   return res;
 }
 Json ActionParameter::to_json() {
-  UpperFirst(this->key);
+  // UpperFirst(this->key);
   return Json{{"key", this->key}, {"value", this->value}};
 }
 void ActionParameter::from_json(const Json& j) {

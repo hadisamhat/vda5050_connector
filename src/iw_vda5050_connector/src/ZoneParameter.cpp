@@ -14,7 +14,7 @@ void ZoneParameter::UpperFirst(string& s) {
 }
 
 Json ZoneParameter::to_json() {
-  UpperFirst(this->key);
+  // UpperFirst(this->key);
   return Json{{"key", this->key}, {"value", this->value}};
 }
 void ZoneParameter::from_json(const Json& j) {

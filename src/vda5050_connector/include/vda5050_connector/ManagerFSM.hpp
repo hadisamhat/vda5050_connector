@@ -156,7 +156,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_state_.msg.header.manufacturer = config_.manufacturer;
       tx_state_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_state_.msg.to_json();
-      logger_->logInfo("updated state msg" + j.dump());
+      // logger_->logInfo("updated state msg" + j.dump());
       ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
       connection_->Publish(tx_state_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           payload, [](Mqtt::MqttConnection&, uint16_t, int) {});
@@ -188,7 +188,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
       tx_connection_.msg.header.manufacturer = config_.manufacturer;
       tx_connection_.msg.header.serialNumber = config_.serial_number;
       auto j = tx_connection_.msg.to_json();
-      logger_->logInfo("updated connection msg" + j.dump());
+      // logger_->logInfo("updated connection msg" + j.dump());
       ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
       connection_->Publish(tx_connection_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           payload, [](Mqtt::MqttConnection&, uint16_t, int) {});

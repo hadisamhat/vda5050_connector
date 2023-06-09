@@ -369,7 +369,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                      bool /*retain*/) {
             std::string msg((char*)byteBuf.buffer, byteBuf.len);
             logger_->logInfo("Received message " + msg + "on topic " + topic.c_str());
-            if (!on_order_received_) return;
+            if (!on_order_received_ && !on_order_json_received_) return;
             Json j;
             try {
               j = Json::parse(msg);
@@ -379,7 +379,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
             }
             std::lock_guard<std::mutex> lock(rx_order_.sub_mutex);
             rx_order_.from_json(j);
-            on_order_received_(rx_order_.msg);
+            if (on_order_received_) on_order_received_(rx_order_.msg);
+            if (on_order_json_received_) on_order_json_received_(rx_order_);
           };
 
           // This is invoked upon the receipt of a Publish on a subscribed topic.
@@ -388,7 +389,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                              Mqtt::QOS /*qos*/, bool /*retain*/) {
             std::string msg((char*)byteBuf.buffer, byteBuf.len);
             logger_->logInfo("Received message " + msg + " on topic " + std::string(topic.c_str()));
-            if (!on_instant_action_received_) return;
+            if (!on_instant_action_received_ && !on_instant_action_json_received_) return;
             Json j;
             try {
               j = Json::parse(msg);
@@ -398,7 +399,9 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
             }
             std::lock_guard<std::mutex> lock(rx_instant_action_.sub_mutex);
             rx_instant_action_.from_json(j);
-            on_instant_action_received_(rx_instant_action_.msg);
+            if (on_instant_action_received_) on_instant_action_received_(rx_instant_action_.msg);
+            if (on_instant_action_json_received_)
+              on_instant_action_json_received_(rx_instant_action_);
           };
           // Subscribe for incoming publish messages on topic.
           auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,

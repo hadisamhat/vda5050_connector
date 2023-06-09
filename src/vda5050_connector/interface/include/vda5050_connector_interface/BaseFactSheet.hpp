@@ -1,14 +1,14 @@
 #pragma once
 #include <experimental/optional>
 
-#include "vda5050_connector_interface/BaseTopicInterface.hpp"
+#include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace vda5050_connector {
 namespace interface {
 
-template <class HeaderT, class TypeSpecificationT, class PhysicalParametersT, class ProtocolLimitsT,
+template <class TypeSpecificationT, class PhysicalParametersT, class ProtocolLimitsT,
     class ProtocolFeaturesT, class AgvGeometryT, class LoadSpecificationT>
-class BaseFactSheet : public BaseTopicInterface<HeaderT> {
+class BaseFactSheet : public BaseInterface {
  public:
   TypeSpecificationT typeSpecification;
   PhysicalParametersT physicalParameters;

@@ -11,7 +11,6 @@
 #include "vda5050_connector/Node.hpp"
 #include "vda5050_connector/NodeState.hpp"
 #include "vda5050_connector/Order.hpp"
-#include "vda5050_connector/ProtocolHeader.hpp"
 #include "vda5050_connector/SafetyState.hpp"
 #include "vda5050_connector/Trajectory.hpp"
 #include "vda5050_connector/Velocity.hpp"
@@ -20,9 +19,9 @@
 using namespace vda5050_connector::impl;
 namespace iw {
 namespace vda5050 {
-class State : public vda5050_connector::interface::BaseState<ProtocolHeader, Order, Edge, Node,
-                  EdgeState, NodeState, ActionState, BatteryState, Error, Load, Info, Trajectory,
-                  SafetyState, AgvPosition, Velocity> {
+class State : public vda5050_connector::interface::BaseState<Order, Edge, Node, EdgeState,
+                  NodeState, ActionState, BatteryState, Error, Load, Info, Trajectory, SafetyState,
+                  AgvPosition, Velocity> {
  public:
   std::string zoneSetId;                               // OPTIONAL
   bool waitingForInteractionZoneRelease;               // TEMPORARY

@@ -1,12 +1,11 @@
 #pragma once
 #include "vda5050_connector/Edge.hpp"
 #include "vda5050_connector/Node.hpp"
-#include "vda5050_connector/ProtocolHeader.hpp"
 #include "vda5050_connector_interface/BaseOrder.hpp"
 
 namespace vda5050_connector {
 namespace impl {
-class Order : public interface::BaseOrder<ProtocolHeader, Edge, Node> {
+class Order : public interface::BaseOrder<Edge, Node> {
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;

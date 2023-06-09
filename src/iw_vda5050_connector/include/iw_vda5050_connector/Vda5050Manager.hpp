@@ -38,7 +38,7 @@ class Manager
   NetworkConfiguration config_;
   BaseSubscribedTopic<MapUpdate> rx_map_update_;
   BaseSubscribedTopic<ZoneUpdate> rx_zone_update_;
-  BaseSubscribedTopic<Json> rx_ssh_token_;
+  // BaseSubscribedTopic<Json> rx_ssh_token_;
 
   std::function<void(MapUpdate&)> on_map_update_received_;
   std::function<void(ZoneUpdate&)> on_zone_update_received_;

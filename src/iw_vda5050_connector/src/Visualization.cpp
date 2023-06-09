@@ -20,7 +20,6 @@ Json Visualization::to_json() {
       {"distanceSinceLastNode", this->distanceSinceLastNode},
       {"batteryState", this->batteryState.to_json()}, {"operatingMode", this->operatingMode},
       {"safetyState", this->safState.to_json()}};
-  j.merge_patch(this->header.to_json());
   Json nodeStates_j = Json::array();
   for (auto& n : this->nodeStates) {
     nodeStates_j.push_back(n.to_json());
@@ -55,7 +54,6 @@ Json Visualization::to_json() {
 }
 
 void Visualization::from_json(const Json& j) {
-  this->header.from_json(j);
   j.at("orderId").get_to(this->orderId);
   j.at("orderUpdateId").get_to(this->orderUpdateId);
   j.at("lastNodeId").get_to(this->lastNodeId);

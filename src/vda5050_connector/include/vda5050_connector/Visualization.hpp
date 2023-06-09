@@ -10,7 +10,6 @@
 #include "vda5050_connector/Node.hpp"
 #include "vda5050_connector/NodeState.hpp"
 #include "vda5050_connector/Order.hpp"
-#include "vda5050_connector/ProtocolHeader.hpp"
 #include "vda5050_connector/SafetyState.hpp"
 #include "vda5050_connector/Trajectory.hpp"
 #include "vda5050_connector/Velocity.hpp"
@@ -18,9 +17,8 @@
 
 namespace vda5050_connector {
 namespace impl {
-class Visualization
-    : public interface::BaseVisualization<ProtocolHeader, EdgeState, NodeState, ActionState,
-          BatteryState, Error, LoadSet, Info, SafetyState, AgvPosition, Velocity> {
+class Visualization : public interface::BaseVisualization<EdgeState, NodeState, ActionState,
+                          BatteryState, Error, LoadSet, Info, SafetyState, AgvPosition, Velocity> {
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;

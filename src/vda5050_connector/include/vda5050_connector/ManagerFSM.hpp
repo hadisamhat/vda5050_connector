@@ -150,28 +150,28 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   void updateStateMsg(const std::function<void(StateMsg&)>& func) override {
     func(tx_state_.msg);
     io_context_.post([this]() {
-      tx_state_.msg.header.headerId++;
-      tx_state_.msg.header.timestamp = getISOCurrentTimestamp();
-      tx_state_.msg.header.version = config_.protocol_version;
-      tx_state_.msg.header.manufacturer = config_.manufacturer;
-      tx_state_.msg.header.serialNumber = config_.serial_number;
-      auto j = tx_state_.msg.to_json();
+      tx_state_.header.headerId++;
+      tx_state_.header.timestamp = getISOCurrentTimestamp();
+      tx_state_.header.version = config_.protocol_version;
+      tx_state_.header.manufacturer = config_.manufacturer;
+      tx_state_.header.serialNumber = config_.serial_number;
+      auto j = tx_state_.to_json();
       // logger_->logInfo("updated state msg" + j.dump());
       ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
-      connection_->Publish(tx_state_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
-          payload, [](Mqtt::MqttConnection&, uint16_t, int) {});
+      connection_->Publish(tx_state_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false, payload,
+          [](Mqtt::MqttConnection&, uint16_t, int) {});
     });
   }
 
   void updateVisualizationMsg(const std::function<void(VisualizationMsg&)>& func) override {
     func(tx_visualization_.msg);
     io_context_.post([this]() {
-      tx_visualization_.msg.header.headerId++;
-      tx_visualization_.msg.header.timestamp = getISOCurrentTimestamp();
-      tx_visualization_.msg.header.version = config_.protocol_version;
-      tx_visualization_.msg.header.manufacturer = config_.manufacturer;
-      tx_visualization_.msg.header.serialNumber = config_.serial_number;
-      auto j = tx_visualization_.msg.to_json();
+      tx_visualization_.header.headerId++;
+      tx_visualization_.header.timestamp = getISOCurrentTimestamp();
+      tx_visualization_.header.version = config_.protocol_version;
+      tx_visualization_.header.manufacturer = config_.manufacturer;
+      tx_visualization_.header.serialNumber = config_.serial_number;
+      auto j = tx_visualization_.to_json();
       // logger_->logInfo("updated visualization msg" + j.dump());
       ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
       connection_->Publish(tx_visualization_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
@@ -182,12 +182,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   void updateConnectionMsg(const std::function<void(ConnectionMsg&)>& func) {
     func(tx_connection_.msg);
     io_context_.post([this]() {
-      tx_connection_.msg.header.headerId++;
-      tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();
-      tx_connection_.msg.header.version = config_.protocol_version;
-      tx_connection_.msg.header.manufacturer = config_.manufacturer;
-      tx_connection_.msg.header.serialNumber = config_.serial_number;
-      auto j = tx_connection_.msg.to_json();
+      tx_connection_.header.headerId++;
+      tx_connection_.header.timestamp = getISOCurrentTimestamp();
+      tx_connection_.header.version = config_.protocol_version;
+      tx_connection_.header.manufacturer = config_.manufacturer;
+      tx_connection_.header.serialNumber = config_.serial_number;
+      auto j = tx_connection_.to_json();
       // logger_->logInfo("updated connection msg" + j.dump());
       ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
       connection_->Publish(tx_connection_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
@@ -198,13 +198,13 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   void updateFactSheetMsg(const std::function<void(FactSheetMsg&)>& func) override {
     func(tx_fact_sheet_.msg);
     io_context_.post([this]() {
-      tx_fact_sheet_.msg.header.headerId++;
-      tx_fact_sheet_.msg.header.timestamp = getISOCurrentTimestamp();
-      tx_fact_sheet_.msg.header.version = config_.protocol_version;
-      tx_fact_sheet_.msg.header.manufacturer = config_.manufacturer;
-      tx_fact_sheet_.msg.header.serialNumber = config_.serial_number;
-      auto j = tx_fact_sheet_.msg.to_json();
-      // logger_->logInfo("publishing update fact_sheet msg" + j.dump());
+      tx_fact_sheet_.header.headerId++;
+      tx_fact_sheet_.header.timestamp = getISOCurrentTimestamp();
+      tx_fact_sheet_.header.version = config_.protocol_version;
+      tx_fact_sheet_.header.manufacturer = config_.manufacturer;
+      tx_fact_sheet_.header.serialNumber = config_.serial_number;
+      auto j = tx_fact_sheet_.to_json();
+      logger_->logInfo("publishing update fact_sheet msg" + j.dump());
       ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
       connection_->Publish(tx_fact_sheet_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           payload, [](Mqtt::MqttConnection&, uint16_t, int) {});
@@ -364,7 +364,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
               return;
             }
             std::lock_guard<std::mutex> lock(rx_order_.sub_mutex);
-            rx_order_.msg.from_json(j);
+            rx_order_.from_json(j);
             on_order_received_(rx_order_.msg);
           };
 
@@ -383,7 +383,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
               return;
             }
             std::lock_guard<std::mutex> lock(rx_instant_action_.sub_mutex);
-            rx_instant_action_.msg.from_json(j);
+            rx_instant_action_.from_json(j);
             on_instant_action_received_(rx_instant_action_.msg);
           };
           // Subscribe for incoming publish messages on topic.
@@ -412,12 +412,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
         [this] {
           if (tx_state_.enable) {
             setupPublisher(state_timer_, tx_state_.topic_name, tx_state_.update_time_s, [this]() {
-              tx_state_.msg.header.headerId++;
-              tx_state_.msg.header.timestamp = getISOCurrentTimestamp();
-              tx_state_.msg.header.version = config_.protocol_version;
-              tx_state_.msg.header.manufacturer = config_.manufacturer;
-              tx_state_.msg.header.serialNumber = config_.serial_number;
-              auto j = tx_state_.msg.to_json();
+              tx_state_.header.headerId++;
+              tx_state_.header.timestamp = getISOCurrentTimestamp();
+              tx_state_.header.version = config_.protocol_version;
+              tx_state_.header.manufacturer = config_.manufacturer;
+              tx_state_.header.serialNumber = config_.serial_number;
+              auto j = tx_state_.to_json();
               // logger_->logInfo("state timeout elapsed, publishing data" + j.dump());
               //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
               //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
@@ -428,12 +428,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           if (tx_connection_.enable) {
             setupPublisher(connection_timer_, tx_connection_.topic_name,
                 tx_connection_.update_time_s, [this]() {
-                  tx_connection_.msg.header.headerId++;
-                  tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();
-                  tx_connection_.msg.header.version = config_.protocol_version;
-                  tx_connection_.msg.header.manufacturer = config_.manufacturer;
-                  tx_connection_.msg.header.serialNumber = config_.serial_number;
-                  auto j = tx_connection_.msg.to_json();
+                  tx_connection_.header.headerId++;
+                  tx_connection_.header.timestamp = getISOCurrentTimestamp();
+                  tx_connection_.header.version = config_.protocol_version;
+                  tx_connection_.header.manufacturer = config_.manufacturer;
+                  tx_connection_.header.serialNumber = config_.serial_number;
+                  auto j = tx_connection_.to_json();
                   // logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
                   //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
                   //   j.dump().length());
@@ -445,12 +445,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           if (tx_fact_sheet_.enable) {
             setupPublisher(fact_sheet_timer_, tx_fact_sheet_.topic_name,
                 tx_fact_sheet_.update_time_s, [this]() {
-                  tx_fact_sheet_.msg.header.headerId++;
-                  tx_fact_sheet_.msg.header.timestamp = getISOCurrentTimestamp();
-                  tx_fact_sheet_.msg.header.version = config_.protocol_version;
-                  tx_fact_sheet_.msg.header.manufacturer = config_.manufacturer;
-                  tx_fact_sheet_.msg.header.serialNumber = config_.serial_number;
-                  auto j = tx_fact_sheet_.msg.to_json();
+                  tx_fact_sheet_.header.headerId++;
+                  tx_fact_sheet_.header.timestamp = getISOCurrentTimestamp();
+                  tx_fact_sheet_.header.version = config_.protocol_version;
+                  tx_fact_sheet_.header.manufacturer = config_.manufacturer;
+                  tx_fact_sheet_.header.serialNumber = config_.serial_number;
+                  auto j = tx_fact_sheet_.to_json();
                   // logger_->logInfo("Fact Sheet timeout elapsed, publishing data" + j.dump());
                   //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
                   //   j.dump().length());
@@ -462,12 +462,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           if (tx_visualization_.enable) {
             setupPublisher(visualization_timer_, tx_visualization_.topic_name,
                 tx_visualization_.update_time_s, [this]() {
-                  tx_visualization_.msg.header.headerId++;
-                  tx_visualization_.msg.header.timestamp = getISOCurrentTimestamp();
-                  tx_visualization_.msg.header.version = config_.protocol_version;
-                  tx_visualization_.msg.header.manufacturer = config_.manufacturer;
-                  tx_visualization_.msg.header.serialNumber = config_.serial_number;
-                  auto j = tx_visualization_.msg.to_json();
+                  tx_visualization_.header.headerId++;
+                  tx_visualization_.header.timestamp = getISOCurrentTimestamp();
+                  tx_visualization_.header.version = config_.protocol_version;
+                  tx_visualization_.header.manufacturer = config_.manufacturer;
+                  tx_visualization_.header.serialNumber = config_.serial_number;
+                  auto j = tx_visualization_.to_json();
                   // logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
                   //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
                   //   j.dump().length());

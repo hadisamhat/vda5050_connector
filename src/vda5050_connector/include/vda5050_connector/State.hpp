@@ -18,9 +18,9 @@
 
 namespace vda5050_connector {
 namespace impl {
-class State : public interface::BaseState<ProtocolHeader, Order, Edge, Node, EdgeState, NodeState,
-                  ActionState, BatteryState, Error, LoadSet, Info, Trajectory, SafetyState,
-                  AgvPosition, Velocity> {
+class State
+    : public interface::BaseState<Order, Edge, Node, EdgeState, NodeState, ActionState,
+          BatteryState, Error, LoadSet, Info, Trajectory, SafetyState, AgvPosition, Velocity> {
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;

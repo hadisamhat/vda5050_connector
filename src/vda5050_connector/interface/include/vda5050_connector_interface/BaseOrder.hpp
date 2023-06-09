@@ -1,13 +1,13 @@
 #pragma once
 #include <experimental/optional>
 
-#include "vda5050_connector_interface/BaseTopicInterface.hpp"
+#include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace vda5050_connector {
 namespace interface {
 
-template <class HeaderT, class EdgeT, class NodeT>
-class BaseOrder : public BaseTopicInterface<HeaderT> {
+template <class EdgeT, class NodeT>
+class BaseOrder : public BaseInterface {
  public:
   std::string orderId;
   int orderUpdateId;

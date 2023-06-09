@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "vda5050_connector_interface/BaseTopicInterface.hpp"
+#include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace vda5050_connector {
 namespace interface {
@@ -18,8 +18,7 @@ constexpr char CONNECTIONBROKEN[] = "CONNECTIONBROKEN";
 
 };  // namespace ConnectionStates
 
-template <class HeaderT>
-class BaseConnection : public BaseTopicInterface<HeaderT> {
+class BaseConnection : public BaseInterface {
  public:
   std::string connectionState;
 };

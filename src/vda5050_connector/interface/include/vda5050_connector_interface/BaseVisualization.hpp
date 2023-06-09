@@ -1,15 +1,14 @@
 #pragma once
 #include <experimental/optional>
 
-#include "vda5050_connector_interface/BaseTopicInterface.hpp"
+#include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace vda5050_connector {
 namespace interface {
 
-template <class HeaderT, class EdgeStateT, class NodeStateT, class ActionStateT,
-    class BatteryStateT, class ErrorT, class LoadT, class InfoT, class SafetyStateT,
-    class AgvPositionT, class VelocityT>
-class BaseVisualization : public BaseTopicInterface<HeaderT> {
+template <class EdgeStateT, class NodeStateT, class ActionStateT, class BatteryStateT, class ErrorT,
+    class LoadT, class InfoT, class SafetyStateT, class AgvPositionT, class VelocityT>
+class BaseVisualization : public BaseInterface {
  public:
   std::string orderId;
   int orderUpdateId;

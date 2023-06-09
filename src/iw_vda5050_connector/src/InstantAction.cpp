@@ -14,12 +14,10 @@ Json InstantAction::to_json() {
     action_j.push_back(pt.to_json());
   }
   j["instantActions"] = action_j;
-  j.merge_patch(this->header.to_json());
   return j;
 }
 
 void InstantAction::from_json(const Json& j) {
-  this->header.from_json(j);
   for (const auto& j : j.at("instantActions")) {
     Action ac;
     ac.from_json(j);
@@ -27,5 +25,5 @@ void InstantAction::from_json(const Json& j) {
   }
 }
 
-}  // namespace impl
-}  // namespace vda5050_connector
+}  // namespace vda5050
+}  // namespace iw

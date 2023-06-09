@@ -53,12 +53,12 @@ void Manager::registerSubscribers() {
     on_zone_update_received_(rx_zone_update_.msg);
   });
 
-  rx_ssh_token_.topic_name =
-      std::regex_replace(DEFAULT_SSH_TUNNEL_TOPIC, std::regex("CLIENT_ID"), client_id_);
-  registerSubscriber(rx_ssh_token_.topic_name, [this](Json j) {
-    if (!on_ssh_token_received_) return;
-    on_ssh_token_received_(j);
-  });
+  // rx_ssh_token_.topic_name =
+  //     std::regex_replace(DEFAULT_SSH_TUNNEL_TOPIC, std::regex("CLIENT_ID"), client_id_);
+  // registerSubscriber(rx_ssh_token_.topic_name, [this](Json j) {
+  //   if (!on_ssh_token_received_) return;
+  //   on_ssh_token_received_(j);
+  // });
 }
 }  // namespace vda5050
 }  // namespace iw

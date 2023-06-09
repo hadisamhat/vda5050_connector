@@ -7,12 +7,9 @@ namespace impl {
 
 // ConnectionState
 Json Connection::to_json() {
-  Json j = Json{{"connectionState", this->connectionState}};
-  j.merge_patch(this->header.to_json());
-  return j;
+  return Json{{"connectionState", this->connectionState}};
 }
 void Connection::from_json(const Json& j) {
-  this->header.from_json(j);
   j.at("connectionState").get_to(this->connectionState);
 }
 }  // namespace impl

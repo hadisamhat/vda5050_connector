@@ -419,10 +419,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
               tx_state_.header.serialNumber = config_.serial_number;
               auto j = tx_state_.to_json();
               // logger_->logInfo("state timeout elapsed, publishing data" + j.dump());
-              //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-              //   j.dump().length()); connection_->Publish(tx_visualization_.topic_name.c_str(),
-              //   AWS_MQTT_QOS_AT_LEAST_ONCE,
-              //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+              ByteBuf payload =
+                  ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
+              connection_->Publish(tx_state_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
+                  payload, [](Mqtt::MqttConnection&, uint16_t, int) {});
             });
           }
           if (tx_connection_.enable) {
@@ -435,11 +435,11 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                   tx_connection_.header.serialNumber = config_.serial_number;
                   auto j = tx_connection_.to_json();
                   // logger_->logInfo("Connection timeout elapsed, publishing data" + j.dump());
-                  //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-                  //   j.dump().length());
-                  //   connection_->Publish(tx_visualization_.topic_name.c_str(),
-                  //   AWS_MQTT_QOS_AT_LEAST_ONCE,
-                  //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+                  ByteBuf payload =
+                      ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
+                  connection_->Publish(tx_connection_.topic_name.c_str(),
+                      AWS_MQTT_QOS_AT_LEAST_ONCE, false, payload,
+                      [](Mqtt::MqttConnection&, uint16_t, int) {});
                 });
           }
           if (tx_fact_sheet_.enable) {
@@ -452,11 +452,11 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                   tx_fact_sheet_.header.serialNumber = config_.serial_number;
                   auto j = tx_fact_sheet_.to_json();
                   // logger_->logInfo("Fact Sheet timeout elapsed, publishing data" + j.dump());
-                  //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-                  //   j.dump().length());
-                  //   connection_->Publish(tx_visualization_.topic_name.c_str(),
-                  //   AWS_MQTT_QOS_AT_LEAST_ONCE,
-                  //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+                  ByteBuf payload =
+                      ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
+                  connection_->Publish(tx_fact_sheet_.topic_name.c_str(),
+                      AWS_MQTT_QOS_AT_LEAST_ONCE, false, payload,
+                      [](Mqtt::MqttConnection&, uint16_t, int) {});
                 });
           }
           if (tx_visualization_.enable) {
@@ -469,11 +469,11 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                   tx_visualization_.header.serialNumber = config_.serial_number;
                   auto j = tx_visualization_.to_json();
                   // logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
-                  //   ByteBuf payload = ByteBufFromArray((const uint8_t*)j.dump().data(),
-                  //   j.dump().length());
-                  //   connection_->Publish(tx_visualization_.topic_name.c_str(),
-                  //   AWS_MQTT_QOS_AT_LEAST_ONCE,
-                  //       false, payload,  [](Mqtt::MqttConnection&, uint16_t, int) {});
+                  ByteBuf payload =
+                      ByteBufFromArray((const uint8_t*)j.dump().data(), j.dump().length());
+                  connection_->Publish(tx_visualization_.topic_name.c_str(),
+                      AWS_MQTT_QOS_AT_LEAST_ONCE, false, payload,
+                      [](Mqtt::MqttConnection&, uint16_t, int) {});
                 });
           }
           if (p_callback_) {

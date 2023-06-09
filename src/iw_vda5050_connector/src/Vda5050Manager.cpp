@@ -42,7 +42,7 @@ void Manager::registerSubscribers() {
     if (!on_map_update_received_) return;
     std::lock_guard<std::mutex> lock(rx_map_update_.sub_mutex);
     rx_map_update_.msg.from_json(j);
-    on_map_update_received_(rx_map_update_.msg);
+    on_map_update_received_(rx_map_update_);
   });
 
   rx_zone_update_.topic_name = getTopicFromString(config_.zone_update_topic_name);
@@ -50,7 +50,7 @@ void Manager::registerSubscribers() {
     if (!on_zone_update_received_) return;
     std::lock_guard<std::mutex> lock(rx_zone_update_.sub_mutex);
     rx_zone_update_.msg.from_json(j);
-    on_zone_update_received_(rx_zone_update_.msg);
+    on_zone_update_received_(rx_zone_update_);
   });
 
   // rx_ssh_token_.topic_name =

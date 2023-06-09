@@ -244,10 +244,22 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
         topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, onMsgReceived, onSubscriberAck);
   }
 
-  void setOnOrderReceived(const std::function<void(OrderMsg&)>& func) { on_order_received_ = func; }
+  void setOnOrderReceived(const std::function<void(OrderMsg&)>& func) override {
+    on_order_received_ = func;
+  }
 
-  void setOnInstantActionReceived(const std::function<void(InstantActionMsg&)>& func) {
+  void setOnInstantActionReceived(const std::function<void(InstantActionMsg&)>& func) override {
     on_instant_action_received_ = func;
+  };
+
+  void setOnOrderJsonReceived(
+      const std::function<void(BaseSubscribedTopic<OrderMsg>&)>& func) override {
+    on_order_json_received_ = func;
+  };
+
+  void setOnInstantActionJsonReceived(
+      const std::function<void(BaseSubscribedTopic<InstantActionMsg>&)>& func) override {
+    on_instant_action_json_received_ = func;
   };
 
  protected:
@@ -267,6 +279,8 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   std::function<void()> p_callback_;
   std::function<void(OrderMsg&)> on_order_received_;
   std::function<void(InstantActionMsg&)> on_instant_action_received_;
+  std::function<void(BaseSubscribedTopic<OrderMsg>&)> on_order_json_received_;
+  std::function<void(BaseSubscribedTopic<InstantActionMsg>&)> on_instant_action_json_received_;
 
   boost::asio::io_context& io_context_;
   boost::asio::steady_timer state_timer_;

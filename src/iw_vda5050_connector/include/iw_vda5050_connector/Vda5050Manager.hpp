@@ -23,10 +23,10 @@ class Manager
   void start() override;
   MapUpdate getMapUpdateMsg();
   ZoneUpdate getZoneUpdateMsg();
-  void setOnMapUpdateReceived(const std::function<void(MapUpdate&)>& func) {
+  void setOnMapUpdateReceived(const std::function<void(BaseSubscribedTopic<MapUpdate>&)>& func) {
     on_map_update_received_ = func;
   };
-  void setOnZoneUpdateReceived(const std::function<void(ZoneUpdate&)>& func) {
+  void setOnZoneUpdateReceived(const std::function<void(BaseSubscribedTopic<ZoneUpdate>&)>& func) {
     on_zone_update_received_ = func;
   };
   void setOnSSHTokenReceived(const std::function<void(Json&)>& func) {
@@ -40,8 +40,8 @@ class Manager
   BaseSubscribedTopic<ZoneUpdate> rx_zone_update_;
   // BaseSubscribedTopic<Json> rx_ssh_token_;
 
-  std::function<void(MapUpdate&)> on_map_update_received_;
-  std::function<void(ZoneUpdate&)> on_zone_update_received_;
+  std::function<void(BaseSubscribedTopic<MapUpdate>&)> on_map_update_received_;
+  std::function<void(BaseSubscribedTopic<ZoneUpdate>&)> on_zone_update_received_;
   std::function<void(Json&)> on_ssh_token_received_;
   void registerSubscribers();
 };

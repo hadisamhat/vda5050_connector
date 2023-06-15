@@ -14,6 +14,7 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 namespace std {
 template <typename T>
 using optional = experimental::optional<T>;
+using experimental::nullopt;
 }  // namespace std
 #else
 #include <optional>

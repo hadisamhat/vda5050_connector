@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.2)
 project(vda5050_connector VERSION 1.0.0 LANGUAGES CXX C)
-add_compile_options(-Werror -std=c++17)
+add_compile_options(-Wall -Wextra -Wpedantic -Werror -std=c++17)
 
 list(APPEND CMAKE_PREFIX_PATH "/opt/iw/usr/lib")
 

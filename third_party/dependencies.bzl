@@ -6,15 +6,6 @@ def clean_dep(dep):
     return str(Label(dep))
 
 def get_vda5050_deps():
-
-    # http_archive(
-    # name = "com_github_nelhage_rules_boost",
-    # patches = ["//third_party:rules_boost.patch"],
-    # build_file = clean_dep("//third_party:asio.BUILD"),
-    # sha256 = "1479f6a46d37c415b0f803186bacb7a78f76305331c556bba20d13247622752a",
-    # type = "tar.gz",
-    # url = "https://developer.nvidia.com/isaac/download/third_party/rules_boost-82ae1790cef07f3fd618592ad227fe2d66fe0b31-tar-gz")
-
     
     new_git_repository(
         name = "aws_iot_sdk_cpp_v2",

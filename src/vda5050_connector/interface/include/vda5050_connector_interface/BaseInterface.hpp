@@ -6,7 +6,7 @@
 namespace std {
 template <typename T>
 using optional = experimental::optional<T>;
-const experimental::nullopt_t nullopt = experimental::nullopt;
+using experimental::nullopt;
 }  // namespace std
 #else
 #include <optional>

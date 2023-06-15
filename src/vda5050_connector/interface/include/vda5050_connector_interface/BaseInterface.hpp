@@ -1,6 +1,17 @@
 #pragma once
 #include <memory>
 
+#if __cplusplus < 201703L
+#include <experimental/optional>
+namespace std {
+template <typename T>
+using optional = experimental::optional<T>;
+const experimental::nullopt_t nullopt = experimental::nullopt;
+}  // namespace std
+#else
+#include <optional>
+#endif
+
 #include "iw_logging/logger_base.hpp"
 #include "iw_logging/std_logger.hpp"
 #include "nlohmann/json.hpp"

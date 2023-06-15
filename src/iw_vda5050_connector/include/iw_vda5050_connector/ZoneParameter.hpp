@@ -1,6 +1,5 @@
+#pragma once
 #include <boost/algorithm/string.hpp>
-#include <experimental/optional>
-
 #include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace iw {

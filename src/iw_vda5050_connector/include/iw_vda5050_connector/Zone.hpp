@@ -1,5 +1,4 @@
-#include <experimental/optional>
-
+#pragma once
 #include "iw_vda5050_connector/ZoneParameter.hpp"
 #include "vda5050_connector/PolygonPoint.hpp"
 #include "vda5050_connector_interface/BaseInterface.hpp"
@@ -21,7 +20,7 @@ class Zone : public vda5050_connector::interface::BaseInterface {
   void from_json(const nlohmann::json& j) override;
 
   template <typename T>
-  std::experimental::optional<T> getZoneParameterByKey(const char* key) const {
+  std::optional<T> getZoneParameterByKey(const char* key) const {
     auto it = find_if(this->zoneParameters.begin(), this->zoneParameters.end(),
         [key](const ZoneParameter z1) { return z1.key == key; });
     if (it != this->zoneParameters.end()) {
@@ -30,8 +29,7 @@ class Zone : public vda5050_connector::interface::BaseInterface {
       ss >> value;
       return value;
     }
-    return std::experimental::nullopt;
-    ;
+    return std::nullopt;
   }
 };
 }  // namespace vda5050

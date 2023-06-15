@@ -1,3 +1,4 @@
+#pragma once
 #include "iw_vda5050_connector/Action.hpp"
 #include "iw_vda5050_connector/InstantAction.hpp"
 #include "iw_vda5050_connector/MapUpdate.hpp"

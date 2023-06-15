@@ -9,17 +9,17 @@ class Order : public interface::BaseOrder<Edge, Node> {
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
-  std::experimental::optional<Edge> getEdgeWithId(
+  std::optional<Edge> getEdgeWithId(
       const std::string& edgeId, int edgeSequenceId) override;
-  std::experimental::optional<Edge> getEdgeWithStartNodeId(
+  std::optional<Edge> getEdgeWithStartNodeId(
       const std::string& startNodeId, int edgeSequenceId) const override;
-  std::experimental::optional<Edge> getEdgeWithEndNodeId(
+  std::optional<Edge> getEdgeWithEndNodeId(
       const std::string& endNodeId, int edgeSequenceId) const override;
-  std::experimental::optional<Node> getNodeWithId(
+  std::optional<Node> getNodeWithId(
       const std::string& nodeId, int nodeSequenceId) const override;
-  std::experimental::optional<Node> getNodeWithSequenceId(int sequenceId) override;
+  std::optional<Node> getNodeWithSequenceId(int sequenceId) override;
 
-  std::experimental::optional<Node> getLastReleasedNode() override;
+  std::optional<Node> getLastReleasedNode() override;
 
   int getNumberOfReleasedNodes() override;
 
@@ -27,9 +27,9 @@ class Order : public interface::BaseOrder<Edge, Node> {
 
   bool hasCorrectNodeCount() override;
 
-  std::experimental::optional<Node> getNextNode(
+  std::optional<Node> getNextNode(
       const std::string& prevNodeId, int prevNodeSequenceId) const override;
-  std::experimental::optional<Node> getPreviousNode(
+  std::optional<Node> getPreviousNode(
       const std::string& nodeId, int nodeSequenceId) const override;
 
   void updateNodeWithId(

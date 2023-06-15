@@ -66,7 +66,7 @@ class Action : public interface::BaseAction<ActionParameter> {
   bool isSupportedAction(const std::vector<std::string>& allowedActions) const override;
 
   template <typename T>
-  std::experimental::optional<T> getParameterByKey(const char* key) const {
+  std::optional<T> getParameterByKey(const char* key) const {
     auto it = find_if(this->actionParameters.begin(), this->actionParameters.end(),
         [key](const ActionParameter& ap) { return ap.key == key; });
     if (it != this->actionParameters.end()) {
@@ -84,7 +84,7 @@ class Action : public interface::BaseAction<ActionParameter> {
 
       return value;
     }
-    return std::experimental::nullopt;
+    return std::nullopt;
   }
 
  private:

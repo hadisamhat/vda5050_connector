@@ -33,7 +33,7 @@ class BaseEdge : public BaseInterface {
   float length;            // OPTIONAL, Unit : meters
   std::vector<ActionT> actions;
 
-  virtual std::experimental::optional<ActionT> tryGetActionOfType(
+  virtual std::optional<ActionT> tryGetActionOfType(
       const std::string& action_type) = 0;
   virtual bool hasActionOfType(const std::string& action_type) const = 0;
 };

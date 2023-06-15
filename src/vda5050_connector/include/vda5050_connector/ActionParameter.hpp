@@ -1,7 +1,5 @@
 #pragma once
 #include <boost/algorithm/string.hpp>
-#include <experimental/optional>
-
 #include "vda5050_connector_interface/BaseActionParameter.hpp"
 
 namespace vda5050_connector {

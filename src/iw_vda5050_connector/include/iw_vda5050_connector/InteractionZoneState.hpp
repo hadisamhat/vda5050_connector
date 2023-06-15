@@ -1,3 +1,4 @@
+#pragma once
 #include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace iw {

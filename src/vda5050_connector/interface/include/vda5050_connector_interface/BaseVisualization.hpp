@@ -1,6 +1,4 @@
 #pragma once
-#include <experimental/optional>
-
 #include "vda5050_connector_interface/BaseInterface.hpp"
 
 namespace vda5050_connector {

@@ -24,13 +24,13 @@ class State
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
-  std::experimental::optional<EdgeState> getEdgeStateWithId(
+  std::optional<EdgeState> getEdgeStateWithId(
       const std::string& edgeId, int edgeSequenceId) override;
-  std::experimental::optional<NodeState> getNodeStateWithId(
+  std::optional<NodeState> getNodeStateWithId(
       const std::string& nodeId, int nodeSequenceId) override;
-  std::experimental::optional<ActionState> getActionStateWithId(
+  std::optional<ActionState> getActionStateWithId(
       const std::string& actionId) override;
-  std::experimental::optional<NodeState> getNodeStateWithSequenceId(int sequenceId) override;
+  std::optional<NodeState> getNodeStateWithSequenceId(int sequenceId) override;
   bool removeActionStateWithId(const std::string& actionId) override;
   bool removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) override;
   bool removeEdgeStateWithId(const std::string& edgeId, int edgeSequenceId) override;

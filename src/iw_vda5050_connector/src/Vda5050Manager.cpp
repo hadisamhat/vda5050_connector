@@ -44,7 +44,7 @@ void Manager::registerSubscribers() {
     MapUpdate map_update_msg;
     map_update_msg.from_json(j);
     rx_map_update_.msg = map_update_msg;
-    on_map_update_received_(rx_map_update_);
+    on_map_update_received_(rx_map_update_.msg);
   });
 
   rx_zone_update_.topic_name = getTopicFromString(config_.zone_update_topic_name);
@@ -54,7 +54,7 @@ void Manager::registerSubscribers() {
     ZoneUpdate zone_update_msg;
     zone_update_msg.from_json(j);
     rx_zone_update_.msg = zone_update_msg;
-    on_zone_update_received_(rx_zone_update_);
+    on_zone_update_received_(rx_zone_update_.msg );
   });
 
   // rx_ssh_token_.topic_name =

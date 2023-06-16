@@ -10,6 +10,10 @@ Manager::Manager(NetworkConfiguration config, boost::asio::io_context& context)
           config, context) {
   config_ = config;
   tx_fact_sheet_.enable = false;
+  tx_connection_.enable = false;
+  tx_state_.enable = false;
+  tx_visualization_.enable = false;
+
   createStateMachine();
 }
 
@@ -54,7 +58,7 @@ void Manager::registerSubscribers() {
     ZoneUpdate zone_update_msg;
     zone_update_msg.from_json(j);
     rx_zone_update_.msg = zone_update_msg;
-    on_zone_update_received_(rx_zone_update_.msg );
+    on_zone_update_received_(rx_zone_update_.msg);
   });
 
   // rx_ssh_token_.topic_name =

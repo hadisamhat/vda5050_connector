@@ -158,12 +158,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   };
 
   void updateStateMsg(const std::function<void(StateMsg&)>& func) override {
-    logger_->logInfo("updating state message");
     StateMsg state_msg;
-    logger_->logInfo("executing function");
     func(state_msg);
-    logger_->logInfo("posting update");
     io_context_.post([this, &state_msg] {
+      logger_->logInfo("updating funciton");
       state_msg.header.headerId = tx_state_.msg.header.headerId++;
       state_msg.header.timestamp = getISOCurrentTimestamp();
       state_msg.header.version = config_.protocol_version;

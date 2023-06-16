@@ -158,62 +158,69 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   };
 
   void updateStateMsg(const std::function<void(StateMsg&)>& func) override {
-    func(tx_state_.msg);
-    io_context_.post([this]() {
-      tx_state_.header.headerId++;
-      tx_state_.header.timestamp = getISOCurrentTimestamp();
-      tx_state_.header.version = config_.protocol_version;
-      tx_state_.header.manufacturer = config_.manufacturer;
-      tx_state_.header.serialNumber = config_.serial_number;
-      auto j = tx_state_.to_json();
+    StateMsg state_msg;
+    func(state_msg);
+    io_context_.post([this, &state_msg] {
+      state_msg.header.headerId = tx_state_.msg.header.headerId++;
+      state_msg.header.timestamp = getISOCurrentTimestamp();
+      state_msg.header.version = config_.protocol_version;
+      state_msg.header.manufacturer = config_.manufacturer;
+      state_msg.header.serialNumber = config_.serial_number;
+      auto j = state_msg.to_json();
       StringMsg msg = j.dump();
       ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
       connection_->Publish(tx_state_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false, payload,
           [](Mqtt::MqttConnection&, uint16_t, int) {});
+      tx_state_.msg = state_msg;
     });
   }
 
   void updateVisualizationMsg(const std::function<void(VisualizationMsg&)>& func) override {
-    func(tx_visualization_.msg);
-    io_context_.post([this]() {
-      tx_visualization_.header.headerId++;
-      tx_visualization_.header.timestamp = getISOCurrentTimestamp();
-      tx_visualization_.header.version = config_.protocol_version;
-      tx_visualization_.header.manufacturer = config_.manufacturer;
-      tx_visualization_.header.serialNumber = config_.serial_number;
-      auto j = tx_visualization_.to_json();
+    VisualizationMsg visualization_msg;
+    func(visualization_msg);
+    io_context_.post([this, &visualization_msg]() {
+      visualization_msg.header.headerId = tx_visualization_.msg.header.headerId++;
+      visualization_msg.header.timestamp = getISOCurrentTimestamp();
+      visualization_msg.header.version = config_.protocol_version;
+      visualization_msg.header.manufacturer = config_.manufacturer;
+      visualization_msg.header.serialNumber = config_.serial_number;
+      auto j = visualization_msg.to_json();
       StringMsg msg = j.dump();
       ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
       connection_->Publish(tx_visualization_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           payload, [](Mqtt::MqttConnection&, uint16_t, int) {});
+      tx_visualization_.msg = visualization_msg;
     });
   }
 
   void updateConnectionMsg(const std::function<void(ConnectionMsg&)>& func) {
-    func(tx_connection_.msg);
-    io_context_.post([this]() {
-      tx_connection_.header.headerId++;
-      tx_connection_.header.timestamp = getISOCurrentTimestamp();
-      tx_connection_.header.version = config_.protocol_version;
-      tx_connection_.header.manufacturer = config_.manufacturer;
-      tx_connection_.header.serialNumber = config_.serial_number;
-      auto j = tx_connection_.to_json();
+    ConnectionMsg connection_msg;
+    func(connection_msg);
+    io_context_.post([this, &connection_msg]() {
+      connection_msg.header.headerId = tx_connection_.msg.header.headerId++;
+      connection_msg.header.timestamp = getISOCurrentTimestamp();
+      connection_msg.header.version = config_.protocol_version;
+      connection_msg.header.manufacturer = config_.manufacturer;
+      connection_msg.header.serialNumber = config_.serial_number;
+      auto j = connection_msg.to_json();
       StringMsg msg = j.dump();
       ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
       connection_->Publish(tx_connection_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
           payload, [](Mqtt::MqttConnection&, uint16_t, int) {});
+      tx_connection_.msg = connection_msg;
     });
   }
 
   void updateFactSheetMsg(const std::function<void(FactSheetMsg&)>& func) override {
-    func(tx_fact_sheet_.msg);
-    io_context_.post([this]() {
-      tx_fact_sheet_.header.headerId++;
-      tx_fact_sheet_.header.timestamp = getISOCurrentTimestamp();
-      tx_fact_sheet_.header.version = config_.protocol_version;
-      tx_fact_sheet_.header.manufacturer = config_.manufacturer;
-      tx_fact_sheet_.header.serialNumber = config_.serial_number;
-      auto j = tx_fact_sheet_.to_json();
+    FactSheetMsg fact_sheet_msg;
+    func(fact_sheet_msg);
+    io_context_.post([this, &fact_sheet_msg]() {
+      fact_sheet_msg.header.headerId = tx_fact_sheet_.msg.header.headerId++;
+      fact_sheet_msg.header.timestamp = getISOCurrentTimestamp();
+      fact_sheet_msg.header.version = config_.protocol_version;
+      fact_sheet_msg.header.manufacturer = config_.manufacturer;
+      fact_sheet_msg.header.serialNumber = config_.serial_number;
+      auto j = fact_sheet_msg.to_json();
       StringMsg msg = j.dump();
       ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
       connection_->Publish(tx_fact_sheet_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
@@ -262,16 +269,6 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
     on_instant_action_received_ = func;
   };
 
-  void setOnOrderJsonReceived(
-      const std::function<void(BaseSubscribedTopic<OrderMsg>&)>& func) override {
-    on_order_json_received_ = func;
-  };
-
-  void setOnInstantActionJsonReceived(
-      const std::function<void(BaseSubscribedTopic<InstantActionMsg>&)>& func) override {
-    on_instant_action_json_received_ = func;
-  };
-
  protected:
   Aws::Crt::ApiHandle apiHandle;
   std::optional<std::string> error_;
@@ -289,8 +286,6 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   std::function<void()> p_callback_;
   std::function<void(OrderMsg&)> on_order_received_;
   std::function<void(InstantActionMsg&)> on_instant_action_received_;
-  std::function<void(BaseSubscribedTopic<OrderMsg>&)> on_order_json_received_;
-  std::function<void(BaseSubscribedTopic<InstantActionMsg>&)> on_instant_action_json_received_;
 
   boost::asio::io_context& io_context_;
   boost::asio::steady_timer state_timer_;
@@ -379,7 +374,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                      bool /*retain*/) {
             std::string msg((char*)byteBuf.buffer, byteBuf.len);
             logger_->logInfo("Received message " + msg + "on topic " + topic.c_str());
-            if (!on_order_received_ && !on_order_json_received_) return;
+            if (!on_order_received_) return;
             Json j;
             try {
               j = Json::parse(msg);
@@ -388,9 +383,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
               return;
             }
             std::lock_guard<std::mutex> lock(rx_order_.sub_mutex);
-            rx_order_.from_json(j);
+            OrderMsg order_msg;
+            order_msg.from_json(j);
+            rx_order_.msg = order_msg;
             if (on_order_received_) on_order_received_(rx_order_.msg);
-            if (on_order_json_received_) on_order_json_received_(rx_order_);
           };
 
           // This is invoked upon the receipt of a Publish on a subscribed topic.
@@ -399,7 +395,7 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
                                              Mqtt::QOS /*qos*/, bool /*retain*/) {
             std::string msg((char*)byteBuf.buffer, byteBuf.len);
             logger_->logInfo("Received message " + msg + " on topic " + std::string(topic.c_str()));
-            if (!on_instant_action_received_ && !on_instant_action_json_received_) return;
+            if (!on_instant_action_received_) return;
             Json j;
             try {
               j = Json::parse(msg);
@@ -408,10 +404,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
               return;
             }
             std::lock_guard<std::mutex> lock(rx_instant_action_.sub_mutex);
-            rx_instant_action_.from_json(j);
+            InstantActionMsg instant_action_msg;
+            instant_action_msg.from_json(j);
+            rx_instant_action_.msg = instant_action_msg;
             if (on_instant_action_received_) on_instant_action_received_(rx_instant_action_.msg);
-            if (on_instant_action_json_received_)
-              on_instant_action_json_received_(rx_instant_action_);
           };
           // Subscribe for incoming publish messages on topic.
           auto onSubscriberAck = [&](Mqtt::MqttConnection&, uint16_t packetId, const String& topic,
@@ -439,12 +435,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
         [this] {
           if (tx_state_.enable) {
             setupPublisher(state_timer_, tx_state_.topic_name, tx_state_.update_time_s, [this]() {
-              tx_state_.header.headerId++;
-              tx_state_.header.timestamp = getISOCurrentTimestamp();
-              tx_state_.header.version = config_.protocol_version;
-              tx_state_.header.manufacturer = config_.manufacturer;
-              tx_state_.header.serialNumber = config_.serial_number;
-              auto j = tx_state_.to_json();
+              tx_state_.msg.header.headerId++;
+              tx_state_.msg.header.timestamp = getISOCurrentTimestamp();
+              tx_state_.msg.header.version = config_.protocol_version;
+              tx_state_.msg.header.manufacturer = config_.manufacturer;
+              tx_state_.msg.header.serialNumber = config_.serial_number;
+              auto j = tx_state_.msg.to_json();
               StringMsg msg = j.dump();
               ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
               connection_->Publish(tx_state_.topic_name.c_str(), AWS_MQTT_QOS_AT_LEAST_ONCE, false,
@@ -454,12 +450,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           if (tx_connection_.enable) {
             setupPublisher(connection_timer_, tx_connection_.topic_name,
                 tx_connection_.update_time_s, [this]() {
-                  tx_connection_.header.headerId++;
-                  tx_connection_.header.timestamp = getISOCurrentTimestamp();
-                  tx_connection_.header.version = config_.protocol_version;
-                  tx_connection_.header.manufacturer = config_.manufacturer;
-                  tx_connection_.header.serialNumber = config_.serial_number;
-                  auto j = tx_connection_.to_json();
+                  tx_connection_.msg.header.headerId++;
+                  tx_connection_.msg.header.timestamp = getISOCurrentTimestamp();
+                  tx_connection_.msg.header.version = config_.protocol_version;
+                  tx_connection_.msg.header.manufacturer = config_.manufacturer;
+                  tx_connection_.msg.header.serialNumber = config_.serial_number;
+                  auto j = tx_connection_.msg.to_json();
                   StringMsg msg = j.dump();
                   // logger_->logInfo("state timeout elapsed, publishing data" + msg);
                   ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
@@ -471,12 +467,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           if (tx_fact_sheet_.enable) {
             setupPublisher(fact_sheet_timer_, tx_fact_sheet_.topic_name,
                 tx_fact_sheet_.update_time_s, [this]() {
-                  tx_fact_sheet_.header.headerId++;
-                  tx_fact_sheet_.header.timestamp = getISOCurrentTimestamp();
-                  tx_fact_sheet_.header.version = config_.protocol_version;
-                  tx_fact_sheet_.header.manufacturer = config_.manufacturer;
-                  tx_fact_sheet_.header.serialNumber = config_.serial_number;
-                  auto j = tx_fact_sheet_.to_json();
+                  tx_fact_sheet_.msg.header.headerId++;
+                  tx_fact_sheet_.msg.header.timestamp = getISOCurrentTimestamp();
+                  tx_fact_sheet_.msg.header.version = config_.protocol_version;
+                  tx_fact_sheet_.msg.header.manufacturer = config_.manufacturer;
+                  tx_fact_sheet_.msg.header.serialNumber = config_.serial_number;
+                  auto j = tx_fact_sheet_.msg.to_json();
                   // logger_->logInfo("Fact Sheet timeout elapsed, publishing data" + j.dump());
                   StringMsg msg = j.dump();
                   ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());
@@ -488,12 +484,12 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
           if (tx_visualization_.enable) {
             setupPublisher(visualization_timer_, tx_visualization_.topic_name,
                 tx_visualization_.update_time_s, [this]() {
-                  tx_visualization_.header.headerId++;
-                  tx_visualization_.header.timestamp = getISOCurrentTimestamp();
-                  tx_visualization_.header.version = config_.protocol_version;
-                  tx_visualization_.header.manufacturer = config_.manufacturer;
-                  tx_visualization_.header.serialNumber = config_.serial_number;
-                  auto j = tx_visualization_.to_json();
+                  tx_visualization_.msg.header.headerId++;
+                  tx_visualization_.msg.header.timestamp = getISOCurrentTimestamp();
+                  tx_visualization_.msg.header.version = config_.protocol_version;
+                  tx_visualization_.msg.header.manufacturer = config_.manufacturer;
+                  tx_visualization_.msg.header.serialNumber = config_.serial_number;
+                  auto j = tx_visualization_.msg.to_json();
                   // logger_->logInfo("Visualization timeout elapsed, publishing data" + j.dump());
                   StringMsg msg = j.dump();
                   ByteBuf payload = ByteBufFromArray((const uint8_t*)msg.data(), msg.length());

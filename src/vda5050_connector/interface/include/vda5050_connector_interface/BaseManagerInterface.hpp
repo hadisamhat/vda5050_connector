@@ -37,11 +37,6 @@ class BaseManagerInterface {
   virtual void setOnOrderReceived(const std::function<void(Order&)>& func) = 0;
   virtual void setOnInstantActionReceived(const std::function<void(InstantAction&)>& func) = 0;
 
-  virtual void setOnInstantActionJsonReceived(
-      const std::function<void(BaseSubscribedTopic<InstantAction>&)>& func) = 0;
-  virtual void setOnOrderJsonReceived(
-      const std::function<void(BaseSubscribedTopic<Order>&)>& func) = 0;
-
   virtual void updateStateMsg(const std::function<void(State&)>& func) = 0;
   virtual void updateVisualizationMsg(const std::function<void(Visualization&)>& func) = 0;
   virtual void updateConnectionMsg(const std::function<void(Connection&)>& func) = 0;

@@ -19,6 +19,7 @@ Json State::to_json() {
       {"driving", this->driving}, {"paused", this->paused},
       {"newBaseRequest", this->newBaseRequest}, {"batteryState", this->batteryState.to_json()},
       {"operatingMode", this->operatingMode}, {"safetyState", this->safState.to_json()}};
+  j.merge_patch(this->header.to_json());
   Json nodeStates_j = Json::array();
   for (auto& n : this->nodeStates) {
     nodeStates_j.push_back(n.to_json());
@@ -58,6 +59,7 @@ Json State::to_json() {
 }
 
 void State::from_json(const Json& j) {
+  this->header.from_json(j);
   j.at("orderId").get_to(this->orderId);
   j.at("orderUpdateId").get_to(this->orderUpdateId);
   j.at("lastNodeId").get_to(this->lastNodeId);
@@ -118,8 +120,7 @@ void State::from_json(const Json& j) {
  * @param edgeSequenceId
  * @return EdgeState
  */
-std::optional<EdgeState> State::getEdgeStateWithId(
-    const std::string& edgeId, int edgeSequenceId) {
+std::optional<EdgeState> State::getEdgeStateWithId(const std::string& edgeId, int edgeSequenceId) {
   auto esIterator = find_if(this->edgeStates.begin(), this->edgeStates.end(),
       [&](const EdgeState& es) { return es.edgeId == edgeId && es.sequenceId == edgeSequenceId; });
   if (esIterator == this->edgeStates.end()) return std::nullopt;
@@ -133,8 +134,7 @@ std::optional<EdgeState> State::getEdgeStateWithId(
  * @param nodeSequenceId
  * @return NodeState
  */
-std::optional<NodeState> State::getNodeStateWithId(
-    const std::string& nodeId, int nodeSequenceId) {
+std::optional<NodeState> State::getNodeStateWithId(const std::string& nodeId, int nodeSequenceId) {
   auto nsIterator = find_if(this->nodeStates.begin(), this->nodeStates.end(),
       [&](const NodeState& ns) { return ns.nodeId == nodeId && ns.sequenceId == nodeSequenceId; });
   if (nsIterator == this->nodeStates.end()) return std::nullopt;

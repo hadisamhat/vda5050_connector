@@ -17,7 +17,7 @@ std::optional<Action> Edge::tryGetActionOfType(const std::string& action_type) {
 }
 Json Edge::to_json() {
   Json j = Json{{"edgeId", this->edgeId}, {"sequenceId", this->sequenceId},
-      {"edgeDescritption", this->edgeDescription}, {"released", this->released},
+      {"edgeDescription", this->edgeDescription}, {"released", this->released},
       {"startNodeId", this->startNodeId}, {"endNodeId", this->endNodeId},
       {"maxSpeed", this->maxSpeed}, {"maxHeight", this->maxHeight}, {"minHeight", this->minHeight},
       {"orientation", this->orientation}, {"direction", this->direction},

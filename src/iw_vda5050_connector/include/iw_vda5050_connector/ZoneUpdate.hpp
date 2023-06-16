@@ -1,10 +1,12 @@
 #pragma once
 
 #include "iw_vda5050_connector/Zone.hpp"
-
+#include "vda5050_connector/ProtocolHeader.hpp"
+#include "vda5050_connector_interface/BaseTopicInterface.hpp"
 namespace iw {
 namespace vda5050 {
-class ZoneUpdate : public vda5050_connector::interface::BaseInterface {
+class ZoneUpdate : public vda5050_connector::interface::BaseTopicInterface<
+                       vda5050_connector::impl::ProtocolHeader> {
  public:
   std::string zoneSetId;
   std::vector<Zone> zones;

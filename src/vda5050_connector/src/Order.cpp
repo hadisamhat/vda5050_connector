@@ -10,6 +10,7 @@ namespace impl {
 Json Order::to_json() {
   Json j = Json{{"orderId", this->orderId}, {"orderUpdateId", this->orderUpdateId},
       {"zoneSetId", this->zoneSetId}};
+  j.merge_patch(this->header.to_json());
   Json nodes_j = Json::array();
   for (auto& n : this->nodes) {
     nodes_j.push_back(n.to_json());
@@ -24,6 +25,7 @@ Json Order::to_json() {
 }
 
 void Order::from_json(const Json& j) {
+  this->header.from_json(j);
   j.at("orderId").get_to(this->orderId);
   j.at("orderUpdateId").get_to(this->orderUpdateId);
   if (j.find("zoneSetId") != j.end() && !j.at("zoneSetId").is_null()) {
@@ -48,8 +50,7 @@ void Order::from_json(const Json& j) {
  * @param edgeSequenceId
  * @return Edge
  */
-std::optional<Edge> Order::getEdgeWithId(
-    const std::string& edgeId, int edgeSequenceId) {
+std::optional<Edge> Order::getEdgeWithId(const std::string& edgeId, int edgeSequenceId) {
   auto it = find_if(this->edges.begin(), this->edges.end(),
       [&](const Edge& e) { return e.edgeId == edgeId && e.sequenceId == edgeSequenceId; });
 
@@ -95,8 +96,7 @@ std::optional<Edge> Order::getEdgeWithEndNodeId(
  * @param nodeSequenceId
  * @return Node
  */
-std::optional<Node> Order::getNodeWithId(
-    const std::string& nodeId, int nodeSequenceId) const {
+std::optional<Node> Order::getNodeWithId(const std::string& nodeId, int nodeSequenceId) const {
   auto it = find_if(this->nodes.begin(), this->nodes.end(),
       [&](const Node& n) { return n.nodeId == nodeId && n.sequenceId == nodeSequenceId; });
 
@@ -128,8 +128,7 @@ std::optional<Node> Order::getLastReleasedNode() {
       reverse_iterator<vector<Node>::iterator>(nodes.begin()),
       [](const Node& n) { return n.released; });
 
-  if (it == reverse_iterator<vector<Node>::iterator>(nodes.begin()))
-    return std::nullopt;
+  if (it == reverse_iterator<vector<Node>::iterator>(nodes.begin())) return std::nullopt;
   return *it;
 }
 
@@ -242,8 +241,7 @@ void Order::updateEdgeWithId(
  * @return nullopt if not previous node exists
  * @return Node
  */
-std::optional<Node> Order::getPreviousNode(
-    const string& nodeId, int nodeSequenceId) const {
+std::optional<Node> Order::getPreviousNode(const string& nodeId, int nodeSequenceId) const {
   auto edgeIt = this->getEdgeWithEndNodeId(nodeId, nodeSequenceId - 1);
   if (!edgeIt) return std::nullopt;
 

@@ -41,7 +41,9 @@ void Manager::registerSubscribers() {
   registerSubscriber(rx_map_update_.topic_name, [this](Json j) {
     if (!on_map_update_received_) return;
     std::lock_guard<std::mutex> lock(rx_map_update_.sub_mutex);
-    rx_map_update_.msg.from_json(j);
+    MapUpdate map_update_msg;
+    map_update_msg.from_json(j);
+    rx_map_update_.msg = map_update_msg;
     on_map_update_received_(rx_map_update_);
   });
 
@@ -49,7 +51,9 @@ void Manager::registerSubscribers() {
   registerSubscriber(rx_zone_update_.topic_name, [this](Json j) {
     if (!on_zone_update_received_) return;
     std::lock_guard<std::mutex> lock(rx_zone_update_.sub_mutex);
-    rx_zone_update_.msg.from_json(j);
+    ZoneUpdate zone_update_msg;
+    zone_update_msg.from_json(j);
+    rx_zone_update_.msg = zone_update_msg;
     on_zone_update_received_(rx_zone_update_);
   });
 

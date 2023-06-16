@@ -18,9 +18,9 @@
 
 namespace vda5050_connector {
 namespace impl {
-class State
-    : public interface::BaseState<Order, Edge, Node, EdgeState, NodeState, ActionState,
-          BatteryState, Error, LoadSet, Info, Trajectory, SafetyState, AgvPosition, Velocity> {
+class State : public interface::BaseState<ProtocolHeader, Order, Edge, Node, EdgeState, NodeState,
+                  ActionState, BatteryState, Error, LoadSet, Info, Trajectory, SafetyState,
+                  AgvPosition, Velocity> {
  public:
   nlohmann::json to_json() override;
   void from_json(const nlohmann::json& j) override;
@@ -28,8 +28,7 @@ class State
       const std::string& edgeId, int edgeSequenceId) override;
   std::optional<NodeState> getNodeStateWithId(
       const std::string& nodeId, int nodeSequenceId) override;
-  std::optional<ActionState> getActionStateWithId(
-      const std::string& actionId) override;
+  std::optional<ActionState> getActionStateWithId(const std::string& actionId) override;
   std::optional<NodeState> getNodeStateWithSequenceId(int sequenceId) override;
   bool removeActionStateWithId(const std::string& actionId) override;
   bool removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) override;

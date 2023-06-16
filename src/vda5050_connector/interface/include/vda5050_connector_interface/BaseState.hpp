@@ -1,5 +1,5 @@
 #pragma once
-#include "vda5050_connector_interface/BaseInterface.hpp"
+#include "vda5050_connector_interface/BaseTopicInterface.hpp"
 
 namespace vda5050_connector {
 namespace interface {
@@ -11,10 +11,10 @@ constexpr char MANUAL[] = "MANUAL";
 constexpr char SERVICE[] = "SERVICE";
 constexpr char TEACHIN[] = "TEACHIN";
 };  // namespace OperatingModes
-template <class OrderT, class EdgeT, class NodeT, class EdgeStateT, class NodeStateT,
+template <class HeaderT, class OrderT, class EdgeT, class NodeT, class EdgeStateT, class NodeStateT,
     class ActionStateT, class BatteryStateT, class ErrorT, class LoadT, class InfoT,
     class TrajectoryT, class SafetyStateT, class AgvPositionT, class VelocityT>
-class BaseState : public BaseInterface {
+class BaseState : public BaseTopicInterface<HeaderT> {
  public:
   std::string orderId;
   int orderUpdateId;
@@ -41,8 +41,7 @@ class BaseState : public BaseInterface {
       const std::string& edgeId, int edgeSequenceId) = 0;
   virtual std::optional<NodeStateT> getNodeStateWithId(
       const std::string& nodeId, int nodeSequenceId) = 0;
-  virtual std::optional<ActionStateT> getActionStateWithId(
-      const std::string& actionId) = 0;
+  virtual std::optional<ActionStateT> getActionStateWithId(const std::string& actionId) = 0;
   virtual std::optional<NodeStateT> getNodeStateWithSequenceId(int sequenceId) = 0;
   virtual bool removeActionStateWithId(const std::string& actionId) = 0;
   virtual bool removeNodeStateWithId(const std::string& nodeId, int nodeSequenceId) = 0;

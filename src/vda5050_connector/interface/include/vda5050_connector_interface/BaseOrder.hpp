@@ -1,11 +1,10 @@
 #pragma once
-#include "vda5050_connector_interface/BaseInterface.hpp"
-
+#include "vda5050_connector_interface/BaseTopicInterface.hpp"
 namespace vda5050_connector {
 namespace interface {
 
-template <class EdgeT, class NodeT>
-class BaseOrder : public BaseInterface {
+template <class HeaderT, class EdgeT, class NodeT>
+class BaseOrder : public BaseTopicInterface<HeaderT> {
  public:
   std::string orderId;
   int orderUpdateId;
@@ -13,8 +12,7 @@ class BaseOrder : public BaseInterface {
   std::vector<NodeT> nodes;
   std::vector<EdgeT> edges;
 
-  virtual std::optional<EdgeT> getEdgeWithId(
-      const std::string& edgeId, int edgeSequenceId) = 0;
+  virtual std::optional<EdgeT> getEdgeWithId(const std::string& edgeId, int edgeSequenceId) = 0;
   virtual std::optional<EdgeT> getEdgeWithStartNodeId(
       const std::string& startNodeId, int edgeSequenceId) const = 0;
   virtual std::optional<EdgeT> getEdgeWithEndNodeId(

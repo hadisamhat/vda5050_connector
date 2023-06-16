@@ -1,11 +1,10 @@
 #pragma once
-#include "vda5050_connector_interface/BaseInterface.hpp"
-
+#include "vda5050_connector_interface/BaseTopicInterface.hpp"
 namespace vda5050_connector {
 namespace interface {
 
-template <class ActionT>
-class BaseInstantAction : public BaseInterface {
+template <class HeaderT, class ActionT>
+class BaseInstantAction : public BaseTopicInterface<HeaderT> {
  public:
   std::vector<ActionT> instantActions;
 };

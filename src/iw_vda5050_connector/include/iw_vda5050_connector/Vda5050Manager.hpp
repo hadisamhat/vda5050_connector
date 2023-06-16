@@ -24,10 +24,10 @@ class Manager
   void start() override;
   MapUpdate getMapUpdateMsg();
   ZoneUpdate getZoneUpdateMsg();
-  void setOnMapUpdateReceived(const std::function<void(BaseSubscribedTopic<MapUpdate>&)>& func) {
+  void setOnMapUpdateReceived(const std::function<void(MapUpdate&)>& func) {
     on_map_update_received_ = func;
   };
-  void setOnZoneUpdateReceived(const std::function<void(BaseSubscribedTopic<ZoneUpdate>&)>& func) {
+  void setOnZoneUpdateReceived(const std::function<void(ZoneUpdate&)>& func) {
     on_zone_update_received_ = func;
   };
   void setOnSSHTokenReceived(const std::function<void(Json&)>& func) {

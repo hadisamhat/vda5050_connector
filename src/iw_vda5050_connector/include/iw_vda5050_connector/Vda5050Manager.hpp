@@ -3,13 +3,13 @@
 #include "iw_vda5050_connector/InstantAction.hpp"
 #include "iw_vda5050_connector/MapUpdate.hpp"
 #include "iw_vda5050_connector/NetworkConfiguration.hpp"
+#include "iw_vda5050_connector/State.hpp"
 #include "iw_vda5050_connector/Visualization.hpp"
 #include "iw_vda5050_connector/ZoneUpdate.hpp"
 #include "vda5050_connector/Connection.hpp"
 #include "vda5050_connector/FactSheet.hpp"
 #include "vda5050_connector/ManagerFSM.hpp"
 #include "vda5050_connector/Order.hpp"
-#include "vda5050_connector/State.hpp"
 
 using namespace vda5050_connector::impl;
 using namespace vda5050_connector::interface;

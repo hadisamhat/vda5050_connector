@@ -158,11 +158,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   };
 
   void updateStateMsg(const std::function<void(StateMsg&)>& func) override {
-    StateMsg state_msg;
-    func(state_msg);
-    io_context_.post([this, &state_msg] {
-      logger_->logInfo("updating funciton");
-      state_msg.header.headerId = tx_state_.msg.header.headerId++;
+    io_context_.post([func, this]() {
+      StateMsg state_msg;
+      func(state_msg);
+      state_msg.header.headerId = state_header_id_++;
       state_msg.header.timestamp = getISOCurrentTimestamp();
       state_msg.header.version = config_.protocol_version;
       state_msg.header.manufacturer = config_.manufacturer;
@@ -178,10 +177,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   }
 
   void updateVisualizationMsg(const std::function<void(VisualizationMsg&)>& func) override {
-    VisualizationMsg visualization_msg;
-    func(visualization_msg);
-    io_context_.post([this, &visualization_msg]() {
-      visualization_msg.header.headerId = tx_visualization_.msg.header.headerId++;
+    io_context_.post([func, this]() {
+      VisualizationMsg visualization_msg;
+      func(visualization_msg);
+      visualization_msg.header.headerId = visualization_header_id_++;
       visualization_msg.header.timestamp = getISOCurrentTimestamp();
       visualization_msg.header.version = config_.protocol_version;
       visualization_msg.header.manufacturer = config_.manufacturer;
@@ -196,10 +195,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   }
 
   void updateConnectionMsg(const std::function<void(ConnectionMsg&)>& func) {
-    ConnectionMsg connection_msg;
-    func(connection_msg);
-    io_context_.post([this, &connection_msg]() {
-      connection_msg.header.headerId = tx_connection_.msg.header.headerId++;
+    io_context_.post([func, this]() {
+      ConnectionMsg connection_msg;
+      func(connection_msg);
+      connection_msg.header.headerId = connection_header_id_++;
       connection_msg.header.timestamp = getISOCurrentTimestamp();
       connection_msg.header.version = config_.protocol_version;
       connection_msg.header.manufacturer = config_.manufacturer;
@@ -214,10 +213,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   }
 
   void updateFactSheetMsg(const std::function<void(FactSheetMsg&)>& func) override {
-    FactSheetMsg fact_sheet_msg;
-    func(fact_sheet_msg);
-    io_context_.post([this, &fact_sheet_msg]() {
-      fact_sheet_msg.header.headerId = tx_fact_sheet_.msg.header.headerId++;
+    io_context_.post([func, this]() {
+      FactSheetMsg fact_sheet_msg;
+      func(fact_sheet_msg);
+      fact_sheet_msg.header.headerId = fact_sheet_header_id_++;
       fact_sheet_msg.header.timestamp = getISOCurrentTimestamp();
       fact_sheet_msg.header.version = config_.protocol_version;
       fact_sheet_msg.header.manufacturer = config_.manufacturer;
@@ -275,7 +274,10 @@ class ManagerFSM : public interface::BaseManagerInterface<OrderMsg, InstantActio
   Aws::Crt::ApiHandle apiHandle;
   std::optional<std::string> error_;
   std::atomic<bool> stop_{false};
-
+  int state_header_id_{0};
+  int fact_sheet_header_id_{0};
+  int connection_header_id_{0};
+  int visualization_header_id_{0};
   std::string client_id_;
   interface::BaseNetworkConfiguration config_;
   BaseSubscribedTopic<OrderMsg> rx_order_;

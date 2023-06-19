@@ -39,6 +39,10 @@ target_link_libraries(${PROJECT_NAME} Boost::system AWS::aws-crt-cpp)
 
 ament_target_dependencies(${PROJECT_NAME} vda5050_connector nlohmann_json iw_logging) 
 
+add_executable(test_function test/test.cpp)
+
+target_link_libraries(test_function ${PROJECT_NAME})
+
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
 install(DIRECTORY include/ DESTINATION include)
 

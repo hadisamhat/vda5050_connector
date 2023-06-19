@@ -34,12 +34,13 @@ int main() {
   config.map_update_topic_name = "map";
   config.zone_update_topic_name = "zones";
   config.ssh_topic_name = "ssh_key";
-  config.manufacturer = "BMW - AG";
-  config.serial_number = "1423320013919";
-  config.endpoint = "ahmj34rbzc71v-ats.iot.eu-central-1.amazonaws.com";
 
   boost::asio::io_context io_context;
   shared_ptr<Manager> manager = make_shared<Manager>(config, io_context);
+  manager->setOnZoneUpdateReceived([&](ZoneUpdate zone) {
+    cout << "Custom on received function executed" << endl;
+    cout << "Action type received " << zone.zoneSetId << endl;
+  });
   manager->start();
   auto worker_thread_ = thread([&io_context]() {
     try {
@@ -50,9 +51,6 @@ int main() {
     }
   });
   while (gSignalStatus == 0) {
-    manager->updateStateMsg([&](State& state) {
-      state.header.headerId = 5;
-    });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   manager->stop();

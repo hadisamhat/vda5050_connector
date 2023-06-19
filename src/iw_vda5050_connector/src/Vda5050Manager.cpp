@@ -10,9 +10,6 @@ Manager::Manager(NetworkConfiguration config, boost::asio::io_context& context)
           config, context) {
   config_ = config;
   tx_fact_sheet_.enable = false;
-  tx_connection_.enable = false;
-  tx_state_.enable = false;
-  tx_visualization_.enable = false;
 
   createStateMachine();
 }
